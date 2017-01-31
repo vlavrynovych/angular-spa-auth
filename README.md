@@ -31,7 +31,68 @@ angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 
 ## Documentation
 
-//TODO
+### Config
+
+###### Example
+```js
+'use strict';
+(function () {
+    angular
+        .module('app')
+        .run(['$rootScope', '$location', '$timeout', 'AuthService', '$http', 'toastr', function ($rootScope, $location, $timeout, AuthService, $http, toastr) {
+            AuthService.run({
+                verbose: false,
+                endpoints: {
+                    isAuthenticated: '/auth/is-authenticated',
+                    currentUser: '/api/user/current',
+                    logout: '/auth/logout',
+                    login: '/auth/login'
+                },
+                handlers: {
+                    error: function () {
+                        toastr.error('Unable to authenticate.');
+                    }
+                },
+                mixin: {
+                    find: function(id) {
+                        return $http.get('/auth/find?id=' + id).then(function (response) {
+                            return response.data;
+                        });
+                    }
+                }
+            });
+        }]);
+})();
+```
+
+
+#### Verbose
+For development perspective you can enable console.info message using `verbose` parameter
+
+```js
+AuthService.run({
+    ...
+    verbose: true,
+    ...
+})
+```
+
+#### Public Urls
+#### Endpoints
+#### UI Routes
+#### Handlers
+#### Mixin
+
+### Run
+
+### Login
+
+### Logout
+
+Simply call AuthService#logout method without any paramenters
+```js
+AuthService.logout()
+```
 
 ## License
 
