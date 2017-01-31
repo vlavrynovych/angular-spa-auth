@@ -1,6 +1,16 @@
 # angular-spa-auth
 Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA
 
+### Quick links
+- [Features](#features)
+- [Get Started](#get-started)
+- [Documentation](#documentation)
+    - [Config](#config)
+    - [Run](#run)
+    - [Login](#login)
+    - [Logout](#logout)
+- [License](#license)
+
 ## Features
 - Handles for you all the work related to and route change
 - Saves original/target route and redirects user to it after login/authentication check
@@ -89,7 +99,7 @@ AuthService.run({
 
 ### Logout
 
-Simply call AuthService#logout method without any paramenters
+Simply call `AuthService#logout` method without any paramenters
 ```js
 AuthService.logout()
 ```
