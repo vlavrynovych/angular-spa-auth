@@ -36,9 +36,9 @@
                 publicUrls: ['/login', '/home'],
                 endpoints: {
                     isAuthenticated: null,
-                    currentUser: '/api/user/current',
-                    logout: '/auth/logout',
-                    login: '/auth/login'
+                    currentUser: null,
+                    logout: '/logout',
+                    login: '/login'
                 },
                 uiRoutes: {
                     login: '/login',
@@ -84,11 +84,7 @@
                             throw new Error(MESSAGES.MISSING_LOGIN_ENDPOINT)
                         }
 
-                        return $http({
-                            method: 'GET',
-                            url: config.endpoints.login,
-                            params: credentials
-                        })
+                        return $http.post(config.endpoints.login, credentials)
                     },
 
                     /**
@@ -109,7 +105,7 @@
                         }
                     }
                 },
-                mixin: {}
+                mixins: {}
             };
 
             // ------------------------------------------------------------------------/// Private
@@ -187,19 +183,19 @@
                     if (options) {
                         config = angular.merge(config, options);
 
-                        if (options.mixin) {
+                        if (options.mixins) {
                             //TODO: check dynamically
-                            if(options.mixin.login
-                                || options.mixin.logout
-                                || options.mixin.saveTargetRoute
-                                || options.mixin.goToTargetRoute
-                                || options.mixin.clearTargetRoute
-                                || options.mixin.goToLogin
-                                || options.mixin.isPublic) {
+                            if(options.mixins.login
+                                || options.mixins.logout
+                                || options.mixins.saveTargetRoute
+                                || options.mixins.goToTargetRoute
+                                || options.mixins.clearTargetRoute
+                                || options.mixins.goToLogin
+                                || options.mixins.isPublic) {
                                 throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE)
                             }
 
-                            angular.merge(service, options.mixin);
+                            angular.merge(service, options.mixins);
                         }
                     }
                     init()
