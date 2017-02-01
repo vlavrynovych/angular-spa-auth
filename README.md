@@ -42,12 +42,14 @@ the authentication process and page load for the [AngularJS](https://angularjs.o
 
 # Installation
 Include File
+
 ```html
 <script type="text/javascript" src=".../angular-spa-auth/dist/angular-spa-auth.min.js"></script>
 ```
 
 
 Add angular-spa-auth in your angular app to your module as a requirement.
+
 ```js
 angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 ```
@@ -104,7 +106,7 @@ Install via [npm](https://www.npmjs.com/)
 
 
 ### Verbose
-For development perspective you can enable console.info message using `verbose` parameter
+For development perspective you can enable **console.info** message using `verbose` parameter
 
 **Default value:** `false`
 
@@ -149,6 +151,7 @@ Endpoints:
 - [logout](#logout-endpoint)
 
 **Default value:**
+
 ```js
 {
     isAuthenticated: null,
@@ -174,23 +177,29 @@ AuthService.run({
 ```
 
 #### isAuthenticated endpoint
+
 | Mandatory 	| Method 	|
 |:---------:	|:------:	|
 | false     	| GET    	|
+
 This endpoint should return only `true` or `false` in a response
 which means that user is already authenticated or not.
 
 #### currentUser endpoint
+
 | Mandatory 	| Method 	|
 |:---------:	|:------:	|
 | true     	    | GET    	|
+
 Should return user information/user representation in `JSON` format
 if authenticated or `404` status code
 
 #### login endpoint
+
 | Mandatory 	| Method 	|
 |:---------:	|:------:	|
 | true     	    | POST    	|
+
 Should provide ability on the backend side to authenticated user using
 his credentials passed as request payload
 
@@ -198,9 +207,11 @@ This endpoint will be used once you call [`AuthService#login`](#login-method) me
 You can override implementation of login handler using custom [handlers](#handlers)
 
 #### logout endpoint
+
 | Mandatory 	| Method 	|
 |:---------:	|:------:	|
 | true     	    | GET    	|
+
 Should provide ability on the backend side to invalidate user session
 
 ### UI Routes
@@ -214,6 +225,7 @@ Routes:
 - [target](#target-route)
 
 **Default value:**
+
 ```js
 {
     login: '/login',
