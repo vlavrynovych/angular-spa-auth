@@ -60,7 +60,7 @@ Install via [Bower](https://bower.io/)
 ## npm
 Install via [npm](https://www.npmjs.com/)
 
-//TODO
+`npm install --save angular-spa-auth`
 
 ## Dependencies
 - [AngularJS](https://angularjs.org/) v1.5.x
