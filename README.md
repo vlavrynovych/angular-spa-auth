@@ -1,41 +1,46 @@
 # angular-spa-auth
-Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA
+Provides ability to easily handle most of the logic related to
+the authentication process and page load for the [AngularJS](https://angularjs.org/) [SPA](https://en.wikipedia.org/wiki/Single-page_application)
 
 # Table of Contents
 - [Features](#features)
-- [Get Started](#get-started)
+- [Installation](#installation)
+    - [Bower](#bower)
+    - [npm](#npm)
+    - [Dependencies](#dependencies)
 - [Documentation](#documentation)
     - [Config](#config)
         - [Verbose](#verbose)
         - [Public Urls](#public-urls)
         - [Endpoints](#endpoints)
+            - [isAuthenticated](#isauthenticated-endpoint)
+            - [currentUser](#currentuser-endpoint)
+            - [login](#login-endpoint)
+            - [logout](#logout-endpoint)
         - [UI Routes](#ui-routes)
+            - [login](#login-route)
+            - [home](#home-route)
+            - [target](#target-route)
         - [Handlers](#handlers)
-        - [Mixin](#mixin)
+            - ...
+        - [Mixins](#mixins)
     - [AuthService](#authservice)
         - [Run](#run-method)
         - [Login](#login-method)
         - [Logout](#logout-method)
-        - [Mixin Methods](#mixin-methods)
+        - [Mixins Methods](#mixins-methods)
 - [License](#license)
 
 # Features
 - Handles for you all the work related to authentication process and route change
 - Saves original/target route and redirects user to it after login/authentication check
 - Very customizable and flexible
-- Has ability to extend service using your own methods
-- Works perfect with both: **angular-route** (**ngRoute**) and **angular-route-segment**
+- Has ability to extend [AuthService](#authservice) using your own methods - [mixins](#mixins)
+- Works perfect with both: [**angular-route**](https://www.npmjs.com/package/angular-route)
+([**ngRoute**](https://www.npmjs.com/package/angular-route)) and
+[**angular-route-segment**](http://angular-route-segment.com/)
 
-# Get Started
-
-Install via Bower
-
-`bower install --save angular-spa-auth`
-
-Install via npm
-
-//TODO
-
+# Installation
 Include File
 ```html
 <script type="text/javascript" src=".../angular-spa-auth/dist/angular-spa-auth.min.js"></script>
@@ -46,6 +51,20 @@ Add angular-spa-auth in your angular app to your module as a requirement.
 ```
 angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 ```
+
+## Bower
+Install via [Bower](https://bower.io/)
+
+`bower install --save angular-spa-auth`
+
+## npm
+Install via [npm](https://www.npmjs.com/)
+
+//TODO
+
+## Dependencies
+- [AngularJS](https://angularjs.org/) v1.5.x
+- [ngRoute](https://www.npmjs.com/package/angular-route) compatible with `AngularJS`
 
 # Documentation
 
@@ -120,7 +139,7 @@ It's backend endpoints that should be implemented.
 Three of them are mandatory and only `isAuthenticated` is optional
 in case if you do not use your custom [handlers](#handlers)
 
-These endpoints are needed for basic authentication flow of SPA
+These endpoints are needed for basic authentication flow of [SPA](https://en.wikipedia.org/wiki/Single-page_application)
 
 **Default value:**
 ```js
@@ -147,23 +166,35 @@ AuthService.run({
 })
 ```
 
-#### isAuthenticated `[optional]`, `GET`
-This endpoint should return only `true` of `false` in a response
+#### isAuthenticated endpoint
+| Mandatory 	| Method 	|
+|:---------:	|--------	|
+| false     	| GET    	|
+This endpoint should return only `true` or `false` in a response
 which means that user is already authenticated or not.
 
-#### currentUser `[required]`, `GET`
+#### currentUser endpoint
+| Mandatory 	| Method 	|
+|:---------:	|--------	|
+| true     	    | GET    	|
 Should return user information/user representation in `JSON` format
 if authenticated or `404` status code
 
-#### logout `[required]`, `GET`
-Should provide ability to invalidate user session
-
-#### login `[required]`, `POST`
-Should provide ability to authenticated user using his credentials
-passed as payload
+#### login endpoint
+| Mandatory 	| Method 	|
+|:---------:	|--------	|
+| true     	    | POST    	|
+Should provide ability on the backend side to authenticated user using
+his credentials passed as request payload
 
 This endpoint will be used once you call [`AuthService#login`](#login-method) method
 You can override implementation of login handler using custom [handlers](#handlers)
+
+#### logout endpoint
+| Mandatory 	| Method 	|
+|:---------:	|--------	|
+| true     	    | GET    	|
+Should provide ability on the backend side to invalidate user session
 
 ### UI Routes
 
@@ -189,12 +220,12 @@ AuthService.run({
 })
 ```
 
-#### `login` route
+#### login route
 `login` route is a page with login form.
 It is used if unauthorized user tries to go the restricted page or
 after logout operation the user will be automatically redirected to this route
 
-#### `home` route
+#### home route
 After the success login user will be automatically redirected to `home` route
 if `target` route was not caught
 
@@ -207,12 +238,19 @@ After the success login he will be redirected to the `home` route
 - user loads restricted/private route (e.g. [www.domain.com/#!/reports](www.domain.com/#!/reports) - `target` route).
 After the success login he will be redirected to the `target` route ([www.domain.com/#!/reports](www.domain.com/#!/reports))
 - user loads public path (e.g. [www.domain.com/#!/registration](www.domain.com/#!/registration) or [www.domain.com/#!/forgotPassword](www.domain.com/#!/forgotPassword) - `target` route).
-After the success login he will be redirected to the `target` route
+After the success login he will be redirected to the `home` route
+([www.domain.com/#!/home](www.domain.com/#!/home) in case of default config)
+
+#### target route
+You do not need to specify `target` route because it will be saved once user will
+try to load private page.
+Please see the examples from the [previous](#home-route) section
 
 ### Handlers
+//TODO
 
-
-### Mixin
+### Mixins
+//TODO
 
 ## AuthService
 This `angular-spa-auth` module supplies `AuthService` which can be injected
@@ -261,8 +299,8 @@ Simply call `AuthService#logout` method without any paramenters
 AuthService.logout()
 ```
 
-### Mixin Methods
-All the methods that were added using `mixin` property of `config` object
+### Mixins Methods
+All the methods that were added using `mixins` property of `config` object
 will be available in the `AuthService` as its own methods.
 
 ###### Example
