@@ -1,6 +1,30 @@
 {
   "name": "angular-spa-auth",
+  "title": "Angular SPA Auth",
   "version": "0.3.0",
+  "author": "Volodymyr Lavrynovych <volodyalavrynovych@gmail.com>",
+  "contributors": [
+    "Volodymyr Lavrynovych <volodyalavrynovych@gmail.com>"
+  ],
+  "main": "dist/angular-spa-auth.min.js",
+  "description": "Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA",
+  "homepage": "https://vlavrynovych.github.io/angular-spa-auth/",
+  "bugs": {
+    "url" : "https://github.com/vlavrynovych/angular-spa-auth/issues"
+  },
+  "repository" : {
+    "type": "git",
+    "url": "https://github.com/vlavrynovych/angular-spa-auth.git"
+  },
+  "keywords": [
+    "angular",
+    "spa",
+    "auth",
+    "route",
+    "ngRoute",
+    "route-segment"
+  ],
+  "license": "MIT",
   "devDependencies": {
     "bower": "1.7.9",
     "del": "2.2.0",
