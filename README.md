@@ -168,21 +168,21 @@ AuthService.run({
 
 #### isAuthenticated endpoint
 | Mandatory 	| Method 	|
-|:---------:	|--------	|
+|:---------:	|:------:	|
 | false     	| GET    	|
 This endpoint should return only `true` or `false` in a response
 which means that user is already authenticated or not.
 
 #### currentUser endpoint
 | Mandatory 	| Method 	|
-|:---------:	|--------	|
+|:---------:	|:------:	|
 | true     	    | GET    	|
 Should return user information/user representation in `JSON` format
 if authenticated or `404` status code
 
 #### login endpoint
 | Mandatory 	| Method 	|
-|:---------:	|--------	|
+|:---------:	|:------:	|
 | true     	    | POST    	|
 Should provide ability on the backend side to authenticated user using
 his credentials passed as request payload
@@ -192,7 +192,7 @@ You can override implementation of login handler using custom [handlers](#handle
 
 #### logout endpoint
 | Mandatory 	| Method 	|
-|:---------:	|--------	|
+|:---------:	|:------:	|
 | true     	    | GET    	|
 Should provide ability on the backend side to invalidate user session
 
