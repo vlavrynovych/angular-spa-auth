@@ -179,7 +179,6 @@ AuthService.run({
 #### isAuthenticated endpoint
 
 | Mandatory 	| Method 	|
-|:---------:|:------:|
 | false     	| GET    	|
 
 This endpoint should return only `true` or `false` in a response
