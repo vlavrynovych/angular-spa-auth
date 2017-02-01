@@ -1,7 +1,7 @@
 # angular-spa-auth
 Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA
 
-## Table of Contents
+# Table of Contents
 - [Features](#features)
 - [Get Started](#get-started)
 - [Documentation](#documentation)
@@ -12,19 +12,21 @@ Provides ability to easily handle most of the logic related to the authenticatio
         - [UI Routes](#ui-routes)
         - [Handlers](#handlers)
         - [Mixin](#mixin)
-    - [Run](#run)
-    - [Login](#login)
-    - [Logout](#logout)
+    - [AuthService](#authservice)
+        - [Run](#run-method)
+        - [Login](#login-method)
+        - [Logout](#logout-method)
+        - [Mixin Methods](#mixin-methods)
 - [License](#license)
 
-## Features
+# Features
 - Handles for you all the work related to authentication process and route change
 - Saves original/target route and redirects user to it after login/authentication check
 - Very customizable and flexible
 - Has ability to extend service using your own methods
 - Works perfect with both: **angular-route** (**ngRoute**) and **angular-route-segment**
 
-## Get Started
+# Get Started
 
 Install via Bower
 
@@ -45,9 +47,9 @@ Add angular-spa-auth in your angular app to your module as a requirement.
 angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 ```
 
-## Documentation
+# Documentation
 
-### Config
+## Config
 
 ###### Example
 ```js
@@ -82,7 +84,7 @@ angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 ```
 
 
-#### Verbose
+### Verbose
 For development perspective you can enable console.info message using `verbose` parameter
 
 **Default value:** `false`
@@ -96,7 +98,7 @@ AuthService.run({
 })
 ```
 
-#### Public Urls
+### Public Urls
 Public urls is a list of urls that available for all unauthorized users.
 
 **Default value:** `['/login', '/home']`
@@ -112,7 +114,7 @@ AuthService.run({
 
 Please do not add routes that should be visible only for authenticated user to this list
 
-#### Endpoints
+### Endpoints
 `endpoints` property is a minimal required configuration for this module.
 It's backend endpoints that should be implemented.
 Three of them are mandatory and only `isAuthenticated` is optional
@@ -145,25 +147,25 @@ AuthService.run({
 })
 ```
 
-##### isAuthenticated `[optional]`, `GET`
+#### isAuthenticated `[optional]`, `GET`
 This endpoint should return only `true` of `false` in a response
 which means that user is already authenticated or not.
 
-##### currentUser `[required]`, `GET`
+#### currentUser `[required]`, `GET`
 Should return user information/user representation in `JSON` format
 if authenticated or `404` status code
 
-##### logout `[required]`, `GET`
+#### logout `[required]`, `GET`
 Should provide ability to invalidate user session
 
-##### login `[required]`, `POST`
+#### login `[required]`, `POST`
 Should provide ability to authenticated user using his credentials
 passed as payload
 
-This endpoint will be used once you call [`AuthService#login`](#login) method
+This endpoint will be used once you call [`AuthService#login`](#login-method) method
 You can override implementation of login handler using custom [handlers](#handlers)
 
-#### UI Routes
+### UI Routes
 
 In some cases these ui routes will be used for user redirection
 
@@ -176,7 +178,6 @@ In some cases these ui routes will be used for user redirection
 ```
 
 ###### Example
-
 ```js
 AuthService.run({
     ...
@@ -188,12 +189,12 @@ AuthService.run({
 })
 ```
 
-#### login
+#### `login` route
 `login` route is a page with login form.
 It is used if unauthorized user tries to go the restricted page or
 after logout operation the user will be automatically redirected to this route
 
-#### home
+#### `home` route
 After the success login user will be automatically redirected to `home` route
 if `target` route was not caught
 
@@ -208,15 +209,38 @@ After the success login he will be redirected to the `target` route ([www.domain
 - user loads public path (e.g. [www.domain.com/#!/registration](www.domain.com/#!/registration) or [www.domain.com/#!/forgotPassword](www.domain.com/#!/forgotPassword) - `target` route).
 After the success login he will be redirected to the `target` route
 
-#### Handlers
+### Handlers
 
 
-#### Mixin
+### Mixin
 
-### Run
+## AuthService
+This `angular-spa-auth` module supplies `AuthService` which can be injected
+in any place of the project allowed by AngularJS
 
-### Login
-To login using user credentials you need to pass them to the [`AuthService#login`](#login) method
+`AuthService` has a couple of public methods that can be used to complement
+your authentication process
+
+### Run method
+This method is a start point of the `angular-spa-auth` module.
+It should be used inside the `.run` method of your app
+
+###### Example
+**app.run.js**
+```js
+angular
+    .module('app')
+    .run(['AuthService', function (AuthService) {
+        var config = {...}
+        AuthService.run(config);
+    }]);
+```
+
+It has only one mandatory input parameter `config`. Please see
+the [configuration](#config) section for more details
+
+### Login method
+To login using user credentials you need to pass them to the [`AuthService#login`](#login-method) method
 
 ###### Example
 ```js
@@ -224,19 +248,56 @@ var credentials = {
     username: 'admin',
     password: 'GOD'
 }
+
 AuthService.login(credentials)
 ```
+By default it sends `POST` request to the [login endpoint](#login-required-post)
 
-Also you can override logic of [`AuthService#login`](#login) method using [handlers](#handlers)
+Also you can override logic of [`AuthService#login`](#login-method) method using [handlers](#handlers)
 
-### Logout
-
+### Logout method
 Simply call `AuthService#logout` method without any paramenters
 ```js
 AuthService.logout()
 ```
 
-## License
+### Mixin Methods
+All the methods that were added using `mixin` property of `config` object
+will be available in the `AuthService` as its own methods.
+
+###### Example
+
+**app.run.js**
+```js
+angular
+    .module('app')
+    .run(['AuthService', function (AuthService) {
+        var config = {...}
+        AuthService.run({
+            mixin: {
+                customMethod: function() {
+                    ...
+                    // your logic here
+                    ...
+                }
+            }
+        });
+    }]);
+```
+
+**main.controller.js**
+```js
+angular
+    .module('app')
+    .controller('MainController', ['$scope', 'AuthService', function ($scope, AuthService) {
+        AuthService.customMethod();
+    }]);
+```
+
+**Note:** you cannot override native methods of the `AuthService`
+(e.g. [`AuthService#login`](#login-method))
+
+# License
 
 The MIT License (MIT)
 
