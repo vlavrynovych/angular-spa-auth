@@ -2,7 +2,7 @@
   "name": "angular-spa-auth",
   "homepage": "https://github.com/vlavrynovych/angular-spa-auth",
   "authors": [
-    "Volodymyr Lavrynovych <volodya.lavrynovych@gmail.com>"
+    "Volodymyr Lavrynovych <volodyalavrynovych@gmail.com>"
   ],
   "version": "0.3.0",
   "description": "Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA",
