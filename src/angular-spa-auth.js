@@ -10,7 +10,7 @@
         CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process'
     };
 
-    angular.module('ng-spa-auth', ['ngRoute'])
+    angular.module('angular-spa-auth', ['ngRoute'])
         .run(['$rootScope', '$location', '$timeout', 'AuthService', function ($rootScope, $location, $timeout, AuthService) {
             $rootScope.$on('$routeChangeStart', function (event, next) {
                 // if not logged yet then save target route
