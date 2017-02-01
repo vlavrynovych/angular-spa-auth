@@ -18,11 +18,11 @@ Provides ability to easily handle most of the logic related to the authenticatio
 - [License](#license)
 
 ## Features
-- Handles for you all the work related to and route change
+- Handles for you all the work related to authentication process and route change
 - Saves original/target route and redirects user to it after login/authentication check
 - Very customizable and flexible
-- Has ability to extend service by you own methods
-- Works perfect with both: angular-route (ngRoute) and angular-route-segment
+- Has ability to extend service using your own methods
+- Works perfect with both: **angular-route** (**ngRoute**) and **angular-route-segment**
 
 ## Get Started
 
@@ -55,29 +55,29 @@ angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 (function () {
     angular
         .module('app')
-        .run(['$rootScope', '$location', '$timeout', 'AuthService', '$http', 'toastr', function ($rootScope, $location, $timeout, AuthService, $http, toastr) {
-            AuthService.run({
-                verbose: false,
-                endpoints: {
-                    isAuthenticated: '/auth/is-authenticated',
-                    currentUser: '/api/user/current',
-                    logout: '/auth/logout',
-                    login: '/auth/login'
-                },
-                handlers: {
-                    error: function () {
-                        toastr.error('Unable to authenticate.');
+        .run(['AuthService', '$http', 'toastr',
+            function (AuthService, $http, toastr) {
+                AuthService.run({
+                    endpoints: {
+                        isAuthenticated: '/auth/is-authenticated',
+                        currentUser: '/api/user/current',
+                        logout: '/auth/logout',
+                        login: '/auth/login'
+                    },
+                    handlers: {
+                        error: function () {
+                            toastr.error('Unable to authenticate.');
+                        }
+                    },
+                    mixin: {
+                        find: function (id) {
+                            return $http.get('/auth/find?id=' + id).then(function (response) {
+                                return response.data;
+                            });
+                        }
                     }
-                },
-                mixin: {
-                    find: function(id) {
-                        return $http.get('/auth/find?id=' + id).then(function (response) {
-                            return response.data;
-                        });
-                    }
-                }
-            });
-        }]);
+                });
+            }]);
 })();
 ```
 
@@ -85,6 +85,9 @@ angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 #### Verbose
 For development perspective you can enable console.info message using `verbose` parameter
 
+**Default value:** `false`
+
+###### Example
 ```js
 AuthService.run({
     ...
@@ -94,14 +97,137 @@ AuthService.run({
 ```
 
 #### Public Urls
+Public urls is a list of urls that available for all unauthorized users.
+
+**Default value:** `['/login', '/home']`
+
+###### Example
+```js
+AuthService.run({
+    ...
+    publicUrls: ['/login', '/home', '/registration', '/confirmation', '/forgotPassword'],
+    ...
+})
+```
+
+Please do not add routes that should be visible only for authenticated user to this list
+
 #### Endpoints
+`endpoints` property is a minimal required configuration for this module.
+It's backend endpoints that should be implemented.
+Three of them are mandatory and only `isAuthenticated` is optional
+in case if you do not use your custom [handlers](#handlers)
+
+These endpoints are needed for basic authentication flow of SPA
+
+**Default value:**
+```js
+{
+    isAuthenticated: null,
+    currentUser: null,
+    logout: '/logout',
+    login: '/login'
+}
+```
+
+###### Example
+
+```js
+AuthService.run({
+    ...
+    endpoints: {
+        isAuthenticated: '/api/is-authenticated',
+        currentUser: '/api/user/current',
+        logout: '/auth/logout',
+        login: '/auth/login'
+    },
+    ...
+})
+```
+
+##### isAuthenticated `[optional]`, `GET`
+This endpoint should return only `true` of `false` in a response
+which means that user is already authenticated or not.
+
+##### currentUser `[required]`, `GET`
+Should return user information/user representation in `JSON` format
+if authenticated or `404` status code
+
+##### logout `[required]`, `GET`
+Should provide ability to invalidate user session
+
+##### login `[required]`, `POST`
+Should provide ability to authenticated user using his credentials
+passed as payload
+
+This endpoint will be used once you call [`AuthService#login`](#login) method
+You can override implementation of login handler using custom [handlers](#handlers)
+
 #### UI Routes
+
+In some cases these ui routes will be used for user redirection
+
+**Default value:**
+```js
+{
+    login: '/login',
+    home: '/home'
+}
+```
+
+###### Example
+
+```js
+AuthService.run({
+    ...
+    uiRoutes: {
+        login: '/login',
+        home: '/dashboard'
+    },
+    ...
+})
+```
+
+#### login
+`login` route is a page with login form.
+It is used if unauthorized user tries to go the restricted page or
+after logout operation the user will be automatically redirected to this route
+
+#### home
+After the success login user will be automatically redirected to `home` route
+if `target` route was not caught
+
+**For example:**
+If user loads your website in a new tab/reloads page
+
+- user loads root path (e.g. [www.domain.com](www.domain.com) - `target` route).
+After the success login he will be redirected to the `home` route
+([www.domain.com/#!/home](www.domain.com/#!/home) in case of default config)
+- user loads restricted/private route (e.g. [www.domain.com/#!/reports](www.domain.com/#!/reports) - `target` route).
+After the success login he will be redirected to the `target` route ([www.domain.com/#!/reports](www.domain.com/#!/reports))
+- user loads public path (e.g. [www.domain.com/#!/registration](www.domain.com/#!/registration) or [www.domain.com/#!/forgotPassword](www.domain.com/#!/forgotPassword) - `target` route).
+After the success login he will be redirected to the `target` route
+
 #### Handlers
+
+
 #### Mixin
 
 ### Run
 
 ### Login
+To login using user credentials you need to pass them to the [`AuthService#login`](#login) method
+
+###### Example
+```js
+var credentials = {
+    username: 'admin',
+    password: 'GOD'
+}
+AuthService.login(credentials)
+```
+
+Also you can override logic of [`AuthService#login`](#login) method using [handlers](#handlers)
 
 ### Logout
 
@@ -114,7 +240,7 @@ AuthService.logout()
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Tanner Linsley
+Copyright (c) 2017 Volodymyr Lavrynovych
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
