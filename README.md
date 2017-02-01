@@ -48,7 +48,7 @@ Include File
 
 
 Add angular-spa-auth in your angular app to your module as a requirement.
-```
+```js
 angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
 ```
 
@@ -141,6 +141,13 @@ in case if you do not use your custom [handlers](#handlers)
 
 These endpoints are needed for basic authentication flow of [SPA](https://en.wikipedia.org/wiki/Single-page_application)
 
+Endpoints:
+
+- [isAuthenticated](#isauthenticated-endpoint)
+- [currentUser](#currentuser-endpoint)
+- [login](#login-endpoint)
+- [logout](#logout-endpoint)
+
 **Default value:**
 ```js
 {
@@ -200,6 +207,12 @@ Should provide ability on the backend side to invalidate user session
 
 In some cases these ui routes will be used for user redirection
 
+Routes:
+
+- [login](#login-route)
+- [home](#home-route)
+- [target](#target-route)
+
 **Default value:**
 ```js
 {
@@ -258,6 +271,13 @@ in any place of the project allowed by AngularJS
 
 `AuthService` has a couple of public methods that can be used to complement
 your authentication process
+
+Public methods:
+
+- [#run](#run-method)
+- [#login](#login-method)
+- [#logout](#logout-method)
+- [Mixins Methods](#mixins-methods)
 
 ### Run method
 This method is a start point of the `angular-spa-auth` module.
