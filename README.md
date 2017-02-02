@@ -1,4 +1,19 @@
 # angular-spa-auth
+
+[![GitHub issues](https://img.shields.io/github/issues/vlavrynovych/angular-spa-auth.svg)](https://github.com/vlavrynovych/angular-spa-auth/issues)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/vlavrynovych/angular-spa-auth/develop/LICENSE)
+[![NPM Version][npm-image]][npm-url]
+[![Bower](https://img.shields.io/bower/v/angular-spa-auth.svg)]()
+[![NPM Downloads][downloads-image]][downloads-url]
+<!--[![Build Status][travis-image]][travis-url]-->
+
+[npm-image]: https://img.shields.io/npm/v/angular-spa-auth.svg?style=flat
+[npm-url]: https://npmjs.org/package/angular-spa-auth
+[downloads-image]: https://img.shields.io/npm/dm/angular-spa-auth.svg?style=flat
+[downloads-url]: https://npmjs.org/package/angular-spa-auth
+<!--[travis-image]: https://travis-ci.org/UnbounDev/angular-spa-auth.svg?branch=master&style=flat-->
+<!--[travis-url]: https://travis-ci.org/UnbounDev/angular-spa-auth-->
+
 Provides ability to easily handle most of the logic related to
 the authentication process and page load for the [AngularJS](https://angularjs.org/) [SPA](https://en.wikipedia.org/wiki/Single-page_application)
 
