@@ -92,7 +92,7 @@ Install via [npm](https://www.npmjs.com/)
                             toastr.error('Unable to authenticate.');
                         }
                     },
-                    mixin: {
+                    mixins: {
                         find: function (id) {
                             return $http.get('/auth/find?id=' + id).then(function (response) {
                                 return response.data;
@@ -297,6 +297,7 @@ It should be used inside the `.run` method of your app
 
 ###### Example
 **app.run.js**
+
 ```js
 angular
     .module('app')
@@ -326,7 +327,8 @@ By default it sends `POST` request to the [login endpoint](#login-required-post)
 Also you can override logic of [`AuthService#login`](#login-method) method using [handlers](#handlers)
 
 ### Logout method
-Simply call `AuthService#logout` method without any paramenters
+Simply call `AuthService#logout` method without any parameters
+
 ```js
 AuthService.logout()
 ```
@@ -338,13 +340,14 @@ will be available in the `AuthService` as its own methods.
 ###### Example
 
 **app.run.js**
+
 ```js
 angular
     .module('app')
     .run(['AuthService', function (AuthService) {
         var config = {...}
         AuthService.run({
-            mixin: {
+            mixins: {
                 customMethod: function() {
                     ...
                     // your logic here
@@ -356,6 +359,7 @@ angular
 ```
 
 **main.controller.js**
+
 ```js
 angular
     .module('app')
