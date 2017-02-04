@@ -14,13 +14,13 @@
         .run(['$rootScope', '$location', '$timeout', 'AuthService', function ($rootScope, $location, $timeout, AuthService) {
             $rootScope.$on('$routeChangeStart', function (event, next) {
                 // if not logged yet then save target route
-                if ((!$rootScope.currentUser || !$rootScope.currentUser.id)) {
+                if ((!AuthService.isAuthenticated())) {
                     if (next.$$route && !AuthService.isPublic(next.$$route.originalPath)) {
                         AuthService.saveTargetRoute();
                         event.preventDefault();
                         $timeout(function () {
                             console.info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
-                            AuthService.goToLogin();
+                            AuthService.openLogin();
                         });
                     }
                 } else {
@@ -47,11 +47,11 @@
                 },
                 handlers: {
                     /**
-                     * Returns url of default page as a string
+                     * Returns url of home page as a string
                      * @param {Object} user authenticated user
                      * @returns {string} url to the default/home page
                      */
-                    getDefaultPage: function(user) {
+                    getHomePage: function(user) {
                         return config.uiRoutes.home;
                     },
 
@@ -119,14 +119,6 @@
                 $location.path(route);
             }
 
-            function getUser() {
-                return config.handlers.getUser().then(function (user) {
-                    $rootScope.currentUser = user;
-                    service.goToTargetRoute(user);
-                    return user;
-                })
-            }
-
             function isAuthenticated() {
                 if (!config.endpoints.isAuthenticated) {
                     return $q(function (resolve, reject) {
@@ -142,13 +134,13 @@
 
             function init() {
                 isAuthenticated().then(function () {
-                    getUser()
+                    service.refreshCurrentUser()
                         .then(config.handlers.success, config.handlers.error)
-                        .catch(goToLogin);
+                        .catch(openLogin);
                 })
             }
 
-            function goToLogin() {
+            function openLogin() {
                 goTo(config.uiRoutes.login);
             }
 
@@ -161,11 +153,10 @@
                 },
                 saveTargetRoute: function () {
                     config.uiRoutes.target = $location.path();
-                    info('Target route is saved:  ' + config.uiRoutes.target);
+                    info('Target route is saved: ' + config.uiRoutes.target);
                 },
-                goToLogin: goToLogin,
-                goToTargetRoute: function (user) {
-                    config.uiRoutes.target = config.uiRoutes.target || config.handlers.getDefaultPage(user);
+                openTargetRoute: function (user) {
+                    config.uiRoutes.target = config.uiRoutes.target || config.handlers.getHomePage(user);
                     goTo(config.uiRoutes.target);
                     info('Redirected to the target route: ' + config.uiRoutes.target);
                     service.clearTargetRoute()
@@ -173,10 +164,37 @@
                 clearTargetRoute: function () {
                     config.uiRoutes.target = null;
                 },
+                openLogin: openLogin,
+                openHome: function () {
+                    goTo(config.handlers.getHomePage($rootScope.currentUser));
+                },
+                /**
+                 * Returns saved current user or load it from backed
+                 * Always returns {Promise}
+                 * @returns {Promise}
+                 */
+                getCurrentUser: function () {
+                    return $rootScope.currentUser ? $rootScope.currentUser : service.refreshCurrentUser();
+                },
+                /**
+                 * Loads user from backed using currentUser endpoint or getUser handler
+                 * Always returns {Promise}
+                 * @returns {*|Observable}
+                 */
+                refreshCurrentUser: function() {
+                    return config.handlers.getUser().then(function (user) {
+                        $rootScope.currentUser = user;
+                        service.openTargetRoute(user);
+                        return user;
+                    })
+                },
+                isAuthenticated: function () {
+                    return !!$rootScope.currentUser;
+                },
                 logout: function () {
                     $http.get(config.endpoints.logout).then(function () {
                         $rootScope.currentUser = null;
-                        goToLogin();
+                        openLogin();
                     });
                 },
                 run: function (options) {
@@ -188,9 +206,10 @@
                             if(options.mixins.login
                                 || options.mixins.logout
                                 || options.mixins.saveTargetRoute
-                                || options.mixins.goToTargetRoute
+                                || options.mixins.openTargetRoute
                                 || options.mixins.clearTargetRoute
-                                || options.mixins.goToLogin
+                                || options.mixins.openLogin
+                                || options.mixins.openHome
                                 || options.mixins.isPublic) {
                                 throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE)
                             }
@@ -202,7 +221,7 @@
                 },
                 login: function (credentials) {
                     config.handlers.login(credentials)
-                        .then(getUser)
+                        .then(service.refreshCurrentUser())
                         .then(config.handlers.success)
                         .catch(config.handlers.error);
                 }
