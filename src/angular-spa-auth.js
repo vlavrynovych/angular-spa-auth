@@ -7,7 +7,7 @@
         MISSING_LOGIN_ENDPOINT: 'Login endpoint is not specified',
         SUCCESS_AUTH: 'Successfully authenticated',
         ERROR_OCCURS: 'Error occurs',
-        CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process'
+        CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process: '
     };
 
     angular.module('angular-spa-auth', ['ngRoute'])
@@ -202,16 +202,10 @@
                         config = angular.merge(config, options);
 
                         if (options.mixins) {
-                            //TODO: check dynamically
-                            if(options.mixins.login
-                                || options.mixins.logout
-                                || options.mixins.saveTargetRoute
-                                || options.mixins.openTargetRoute
-                                || options.mixins.clearTargetRoute
-                                || options.mixins.openLogin
-                                || options.mixins.openHome
-                                || options.mixins.isPublic) {
-                                throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE)
+                            for(var prop in options.mixins) {
+                                if(service.hasOwnProperty(prop)){
+                                    throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE + prop)
+                                }
                             }
 
                             angular.merge(service, options.mixins);
