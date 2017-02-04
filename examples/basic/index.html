@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="app" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angular-spa-auth basic example</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="../../dist/angular-spa-auth.min.js"></script>
+    <script src="app.module.js"></script>
+    <script src="app.run.js"></script>
+    <script src="app.routes.js"></script>
+    <script src="menu.controller.js"></script>
+    <script src="home/home.controller.js"></script>
+    <script src="login/login.controller.js"></script>
+    <style>
+        .text-muted {
+            color: #999 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <br>
+    <div class="well well-sm" ng-controller="MenuController">
+        <a class="btn btn-link" href="#!/home">Home</a>
+        <a class="btn btn-link" ng-class="{'text-muted': currentUser}" href="#!/login">Login</a>
+        <a class="btn btn-link" ng-class="{'text-muted': !currentUser}" href="#!/private">Private Page</a>
+        <a class="btn btn-link" ng-class="{'text-muted': !currentUser}" ng-click="logout()">Logout</a>
+    </div>
+
+    <div ng-view></div>
+
+    <br>
+    <br>
+    <small class="text-muted">You can open Chrome DevTools to see console.info outputs</small>
+</div>
+
+</body>
+</html>

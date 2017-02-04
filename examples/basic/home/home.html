@@ -1,0 +1,14 @@
+<h1 class="page-header">Home Page
+    <small>This page is visible all the time</small>
+</h1>
+
+<div ng-show="currentUser">
+    <p>
+        You are successfully logged in!<br>
+        Now you can go to the <a href="#!/private">Private Page</a>
+    </p>
+</div>
+<div ng-hide="currentUser">
+    <p>Please go to the login screen</p>
+    <div class="btn btn-primary" ng-click="openLogin()">Login</div>
+</div>
