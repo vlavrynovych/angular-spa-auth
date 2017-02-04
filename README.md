@@ -7,6 +7,8 @@
 [![NPM Downloads][downloads-image]][downloads-url]
 <!--[![Build Status][travis-image]][travis-url]-->
 
+[![NPM](https://nodei.co/npm/angular-spa-auth.png?downloads=true)](https://nodei.co/npm/angular-spa-auth/)
+
 [npm-image]: https://img.shields.io/npm/v/angular-spa-auth.svg?style=flat
 [npm-url]: https://npmjs.org/package/angular-spa-auth
 [downloads-image]: https://img.shields.io/npm/dm/angular-spa-auth.svg?style=flat
@@ -15,7 +17,8 @@
 <!--[travis-url]: https://travis-ci.org/UnbounDev/angular-spa-auth-->
 
 Provides ability to easily handle most of the logic related to
-the authentication process and page load for the [AngularJS](https://angularjs.org/) [SPA](https://en.wikipedia.org/wiki/Single-page_application)
+the authentication process and route change for the [AngularJS](https://angularjs.org/)
+[SPA](https://en.wikipedia.org/wiki/Single-page_application)
 
 # Table of Contents
 - [Features](#features)
@@ -40,9 +43,18 @@ the authentication process and page load for the [AngularJS](https://angularjs.o
             - ...
         - [Mixins](#mixins)
     - [AuthService](#authservice)
-        - [Run](#run-method)
-        - [Login](#login-method)
-        - [Logout](#logout-method)
+        - [#run(config)](#run-method)
+        - [#login(credentials)](#login-method)
+        - [#logout()](#logout-method)
+        - [#getCurrentUser()](#getcurrentuser-method)
+        - [#refreshCurrentUser()](#refreshcurrentuser-method)
+        - [#isAuthenticated()](#isauthenticated-method)
+        - [#isPublic(url)](#ispublic-method)
+        - [#saveTarget()](#savetarget-method)
+        - [#clearTarget()](#cleartarget-method)
+        - [#openTarget()](#opentarget-method)
+        - [#openLogin()](#openlogin-method)
+        - [#openHome()](#openhome-method)
         - [Mixins Methods](#mixins-methods)
 - [License](#license)
 
@@ -53,7 +65,11 @@ the authentication process and page load for the [AngularJS](https://angularjs.o
 - Has ability to extend [AuthService](#authservice) using your own methods - [mixins](#mixins)
 - Works perfect with both: [**angular-route**](https://www.npmjs.com/package/angular-route)
 ([**ngRoute**](https://www.npmjs.com/package/angular-route)) and
-[**angular-route-segment**](http://angular-route-segment.com/)
+[**angular-route-segment**](http://angular-route-segment.com/).
+Also should work will all the modules that are based on **ngRoute**
+- Authneticated user model is always available in `$rootScope.currentUser`
+which means that you can use it in your views as `<div ng-show='currentUser.admin'>{{currentUser.firstName}}</div>`
+And you can always get it using service method - [`AuthService.getCurrentUser()`](#getcurrentuser-method) - in any place of your project
 
 # Installation
 Include File
@@ -193,27 +209,27 @@ AuthService.run({
 
 #### isAuthenticated endpoint
 
-| Mandatory 	| Method 	|
+| Mandatory | Method |
 |:---------:|:------:|
-| false     	| GET    	|
+| false     | GET    |
 
 This endpoint should return only `true` or `false` in a response
 which means that user is already authenticated or not.
 
 #### currentUser endpoint
 
-| Mandatory 	| Method 	|
+| Mandatory | Method |
 |:---------:|:------:|
-| true     	    | GET    	|
+| true     	| GET    |
 
 Should return user information/user representation in `JSON` format
 if authenticated or `404` status code
 
 #### login endpoint
 
-| Mandatory 	| Method 	|
+| Mandatory | Method |
 |:---------:|:------:|
-| true     	    | POST    	|
+| true     	| POST   |
 
 Should provide ability on the backend side to authenticated user using
 his credentials passed as request payload
@@ -223,9 +239,9 @@ You can override implementation of login handler using custom [handlers](#handle
 
 #### logout endpoint
 
-| Mandatory 	| Method 	|
+| Mandatory | Method |
 |:---------:|:------:|
-| true     	    | GET    	|
+| true     	| GET    |
 
 Should provide ability on the backend side to invalidate user session
 
@@ -301,12 +317,22 @@ your authentication process
 
 Public methods:
 
-- [#run](#run-method)
-- [#login](#login-method)
-- [#logout](#logout-method)
+- [#run(config)](#run-method)
+- [#login(credentials)](#login-method)
+- [#logout()](#logout-method)
+- [#getCurrentUser()](#getcurrentuser-method)
+- [#refreshCurrentUser()](#refreshcurrentuser-method)
+- [#isAuthenticated()](#isauthenticated-method)
+- [#isPublic(url)](#ispublic-method)
+- [#saveTarget()](#savetarget-method)
+- [#clearTarget()](#cleartarget-method)
+- [#openTarget()](#opentarget-method)
+- [#openLogin()](#openlogin-method)
+- [#openHome()](#openhome-method)
 - [Mixins Methods](#mixins-methods)
 
-### Run method
+
+### run method
 This method is a start point of the `angular-spa-auth` module.
 It should be used inside the `.run` method of your app
 
@@ -325,7 +351,7 @@ angular
 It has only one mandatory input parameter `config`. Please see
 the [configuration](#config) section for more details
 
-### Login method
+### login method
 To login using user credentials you need to pass them to the [`AuthService#login`](#login-method) method
 
 ###### Example
@@ -341,11 +367,104 @@ By default it sends `POST` request to the [login endpoint](#login-required-post)
 
 Also you can override logic of [`AuthService#login`](#login-method) method using [handlers](#handlers)
 
-### Logout method
+### logout method
 Simply call `AuthService#logout` method without any parameters
 
+###### Example
 ```js
 AuthService.logout()
+```
+
+### getCurrentUser method
+
+If user already authenticated then it returns user model from $rootScope.currentUser.
+If not then tries to load user model from backend and returns promise
+
+###### Example
+```js
+var user = AuthService.getCurrentUser()
+```
+
+### refreshCurrentUser method
+
+Load fresh version of current user model from backend.
+Returns promise.
+
+###### Example
+```js
+var promise = AuthService.refreshCurrentUser().then(function(user) {
+    // your logic here
+})
+```
+
+### isAuthenticated method
+
+Returns `true` if user already authenticated and `false` if not
+
+###### Example
+```js
+if(AuthService.isAuthenticated()) {
+    // do something
+}
+```
+
+### isPublic method
+
+Checks if provided url is in a [list of public urls](#public-urls)
+
+###### Example
+```js
+if(AuthService.isPublic('/private')) {
+    // do something
+} else {
+    // redirect somewhere
+}
+```
+
+### saveTarget method
+
+Saves current route as a target route. Will be used in case of successful login.
+Can be cleaned using [`#clearTarget()`](#cleartarget-method)
+
+###### Example
+```js
+AuthService.saveTarget()
+```
+
+### clearTarget method
+
+Clears target route
+
+###### Example
+```js
+AuthService.clearTarget()
+```
+
+### openTarget method
+
+Redirects user to the saved target route
+
+###### Example
+```js
+AuthService.openTarget()
+```
+
+### openLogin method
+
+Redirects user to the login page
+
+###### Example
+```js
+AuthService.openLogin()
+```
+
+### openHome method
+
+Redirects user to the home page
+
+###### Example
+```js
+AuthService.openHome()
 ```
 
 ### Mixins Methods

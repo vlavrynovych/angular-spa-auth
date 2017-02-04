@@ -16,7 +16,7 @@
                 // if not logged yet then save target route
                 if ((!AuthService.isAuthenticated())) {
                     if (next.$$route && !AuthService.isPublic(next.$$route.originalPath)) {
-                        AuthService.saveTargetRoute();
+                        AuthService.saveTarget();
                         event.preventDefault();
                         $timeout(function () {
                             console.info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
@@ -151,17 +151,17 @@
                         return url.indexOf(publicUrl) > -1;
                     });
                 },
-                saveTargetRoute: function () {
+                saveTarget: function () {
                     config.uiRoutes.target = $location.path();
                     info('Target route is saved: ' + config.uiRoutes.target);
                 },
-                openTargetRoute: function (user) {
-                    config.uiRoutes.target = config.uiRoutes.target || config.handlers.getHomePage(user);
+                openTarget: function () {
+                    config.uiRoutes.target = config.uiRoutes.target || config.handlers.getHomePage($rootScope.currentUser);
                     goTo(config.uiRoutes.target);
                     info('Redirected to the target route: ' + config.uiRoutes.target);
-                    service.clearTargetRoute()
+                    service.clearTarget()
                 },
-                clearTargetRoute: function () {
+                clearTarget: function () {
                     config.uiRoutes.target = null;
                 },
                 openLogin: openLogin,
@@ -179,12 +179,12 @@
                 /**
                  * Loads user from backed using currentUser endpoint or getUser handler
                  * Always returns {Promise}
-                 * @returns {*|Observable}
+                 * @returns {Promise}
                  */
                 refreshCurrentUser: function() {
                     return config.handlers.getUser().then(function (user) {
                         $rootScope.currentUser = user;
-                        service.openTargetRoute(user);
+                        service.openTarget();
                         return user;
                     })
                 },
