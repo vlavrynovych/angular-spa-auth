@@ -3,10 +3,12 @@
 var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
+    sourcemaps = require('gulp-sourcemaps'),
+    rename = require('gulp-rename'),
     del = require('del');
 
 var DIST = 'dist';
-var DIST_NAME = 'angular-spa-auth.min.js';
+var DIST_NAME = 'angular-spa-auth.js';
 
 var JS = [
     'src/**/*.js'
@@ -14,8 +16,12 @@ var JS = [
 
 gulp.task('concat', function () {
     return gulp.src(JS, {base: 'app'})
+        .pipe(sourcemaps.init())
         .pipe(concat(DIST_NAME))
+        .pipe(gulp.dest(DIST))
         .pipe(uglify())
+        .pipe(rename({ extname: '.min.js' }))
+        .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(DIST));
 });
 
