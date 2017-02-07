@@ -16,7 +16,7 @@
 <!--[travis-image]: https://travis-ci.org/UnbounDev/angular-spa-auth.svg?branch=master&style=flat-->
 <!--[travis-url]: https://travis-ci.org/UnbounDev/angular-spa-auth-->
 
-Provides ability to easily handle most of the logic related to
+Frontend module that provides ability to easily handle most of the logic related to
 the authentication process and route change for the [AngularJS](https://angularjs.org/)
 [SPA](https://en.wikipedia.org/wiki/Single-page_application)
 
@@ -40,7 +40,11 @@ the authentication process and route change for the [AngularJS](https://angularj
             - [home](#home-route)
             - [target](#target-route)
         - [Handlers](#handlers)
-            - ...
+            - [#getHomePage(user)](#gethomepage-handler)
+            - [#getUser()](#getuser-handler)
+            - [#login(credentials)](#login-handler)
+            - [#success(data)](#success-handler)
+            - [#error(err)](#error-handler)
         - [Mixins](#mixins)
     - [AuthService](#authservice)
         - [#run(config)](#run-method)
@@ -82,7 +86,7 @@ Include File
 Add angular-spa-auth in your angular app to your module as a requirement.
 
 ```js
-angular.module('app-name', ['ngRoute', 'angular-spa-auth']);
+angular.module('app', ['ngRoute', 'angular-spa-auth']);
 ```
 
 ## Bower
@@ -303,7 +307,184 @@ try to load private page.
 Please see the examples from the [previous](#home-route) section
 
 ### Handlers
-//TODO
+
+We are providing handlers as additional possibility to customize authentication process.
+Instead of using [endpoints](#endpoints) configuration you can use your own implementation
+
+- [#getHomePage(user)](#gethomepage-handler)
+- [#getUser()](#getuser-handler)
+- [#login(credentials)](#login-handler)
+- [#success(data)](#success-handler)
+- [#error(err)](#error-handler)
+
+#### getHomePage handler
+
+Overriding this handler you should provide logic for getting home page route.
+It can be based on the user model or on your own logic related to your project.
+
+**Input**
+
+| Name | Type | Description |
+|:----:|:----:|:-----------:|
+| user | `Object` | Object representation of `JSON` received from backend. Can be null |
+
+**Output**
+
+| Type | Description |
+|:----:|:----:|
+| `String` | Home page route |
+
+In example you can find easiest use case.
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        getHomePage: function(user) {
+            return user.admin ? '/dashboard' : '/profile'
+        }
+    },
+    ...
+})
+```
+
+
+#### getUser handler
+
+You should provide implementation of how to get authenticated user from backed or other source.
+
+**Output**
+
+| Type | Description |
+|:----:|:----:|
+| `Promise` | Promise with user |
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        getUser: function(user) {
+            return $http.get('/api/user/current').then(function (response) {
+                var user = response.data;
+
+                // extending user object by two new methods
+                user.isAdmin = function() {
+                    return this.admin;
+                }
+
+                user.getFullName = function() {
+                    return this.firstName + ' ' + this.lastName;
+                }
+
+                return user;
+            })
+        }
+    },
+    ...
+})
+```
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        getUser: function(user) {
+            return $q(function (resolve, reject) {
+
+                // you can use native window.localStorage or ngStorage module
+                // but the main idea is that you have to implement logic
+                // to get user object using any storage type and
+                // always return Promise
+                var user = JSON.parse(window.localStorage.get("previouslySavedUser"))
+
+                resolve(user)
+            });
+        }
+    },
+    ...
+})
+```
+
+#### login handler
+
+Overriding this handler you should implement your authentication logic
+
+**Input**
+
+| Name | Type | Description |
+|:----:|:----:|:-----------:|
+| credentials | `Object` | Object with username and password or token or any information that will help user to login to the system |
+
+**Output**
+
+| Type | Description |
+|:----:|:----:|
+| `Promise` | Promise where success callback means that login operation was successfully completed |
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        login: function(credentials) {
+            return $http.post('/api/login', credentials);
+        }
+    },
+    ...
+})
+```
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        login: function(credentials) {
+            return $auth.authenticate('strava')
+        }
+    },
+    ...
+})
+```
+
+**Note:** `$auth` service is provided by [`satellizer`](https://github.com/sahat/satellizer) module
+
+#### success handler
+
+You can provide your reaction on login success using this handler
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        success: function(data) {
+            toastr.success('Successfully authenticated', {timeOut: 1500});
+        }
+    },
+    ...
+})
+```
+
+#### error handler
+
+Override this handler to provide your reaction on login error using this handler
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        error: function(data) {
+            toastr.error('Unable to authenticate.');
+        }
+    },
+    ...
+})
+```
 
 ### Mixins
 //TODO

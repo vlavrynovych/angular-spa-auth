@@ -56,7 +56,7 @@
                     },
 
                     /**
-                     * Returns promise of get request which should get current user from backend
+                     * Returns promise of GET request which should get current user from backend
                      * @returns {Promise}
                      */
                     getUser: function () {
