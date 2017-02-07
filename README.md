@@ -26,6 +26,7 @@ the authentication process and route change for the [AngularJS](https://angularj
     - [Bower](#bower)
     - [npm](#npm)
     - [Dependencies](#dependencies)
+- [Examples](#examples)
 - [Documentation](#documentation)
     - [Config](#config)
         - [Verbose](#verbose)
@@ -103,11 +104,21 @@ Install via [npm](https://www.npmjs.com/)
 - [AngularJS](https://angularjs.org/) v1.5.x
 - [ngRoute](https://www.npmjs.com/package/angular-route) compatible with `AngularJS`
 
+# Examples
+
+| Name | Route Engine | Source Code | Demo | Description
+|:-----|:----:|:----:|:----:|:-----|
+| Basic #1 | [**ngRoute**](https://www.npmjs.com/package/angular-route) | [Source](https://github.com/vlavrynovych/angular-spa-auth/tree/master/examples/basic) | [Demo](https://vlavrynovych.github.io/angular-spa-auth/examples/basic/) | User is **not** logged in on start |
+| Basic #2 | [**ngRoute**](https://www.npmjs.com/package/angular-route) | [Source](https://github.com/vlavrynovych/angular-spa-auth/tree/master/examples/basic) | [Demo](https://vlavrynovych.github.io/angular-spa-auth/examples/basic/?authenticated#!/private) | User is logged in on start |
+| Extended #1 | [**ngRoute**](https://www.npmjs.com/package/angular-route) | ... | ... | ... |
+| Extended #2 | [**angular-route-segment**](http://angular-route-segment.com/) | ... | ... | ... |
+| Full Customization | [**ngRoute**](https://www.npmjs.com/package/angular-route) |  ... | ... | ... |
+
 # Documentation
 
 ## Config
 
-First of all you have to pass `config` object to the [#run](#run-method) method
+First of all you have to pass `config` object to the [AuthService#run](#run-method) method
 
 ###### Example
 ```js
