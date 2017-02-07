@@ -4,7 +4,7 @@
   "authors": [
     "Volodymyr Lavrynovych <volodyalavrynovych@gmail.com>"
   ],
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA",
   "main": "dist/angular-spa-auth.min.js",
   "keywords": [
