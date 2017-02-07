@@ -107,6 +107,8 @@ Install via [npm](https://www.npmjs.com/)
 
 ## Config
 
+First of all you have to pass `config` object to the [#run](#run-method) method
+
 ###### Example
 ```js
 'use strict';
@@ -139,6 +141,16 @@ Install via [npm](https://www.npmjs.com/)
 })();
 ```
 
+The `config` object have different field for customizing you authentication process
+
+| Name | Type | Description |
+|:----:|:----:|:------------|
+| [verbose](#verbose) | `Boolean` | Activates `console.info` output if true |
+| [publicUrls](#public-urls) | `Array<String>` | List url that are available for unauthorized users |
+| [endpoints](#endpoints) | `Object` | Gives you ability to setup all the backed endpoints that will own roles in the authentication process |
+| [uiRoutes](#ui-routes) | `Object` | Helps you automatically redirect user to the specified UI routes such as `home` and `login` |
+| [handlers](#handlers) | `Object` | Allows you to provide you implementation for key methods of authentication process |
+| [mixins](#mixins) | `Object` | Allows you to extend [`AuthService`](#authservice)  |
 
 ### Verbose
 For development perspective you can enable **console.info** message using `verbose` parameter
