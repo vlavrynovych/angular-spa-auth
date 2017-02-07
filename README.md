@@ -487,7 +487,43 @@ AuthService.run({
 ```
 
 ### Mixins
-//TODO
+
+All the methods that are added using `mixins` property of `config` object
+will be available in the `AuthService` as its own methods.
+
+###### Example
+
+**app.run.js**
+
+```js
+angular
+    .module('app')
+    .run(['AuthService', function (AuthService) {
+        var config = {...}
+        AuthService.run({
+            mixins: {
+                customMethod: function() {
+                    ...
+                    // your logic here
+                    ...
+                }
+            }
+        });
+    }]);
+```
+
+**main.controller.js**
+
+```js
+angular
+    .module('app')
+    .controller('MainController', ['$scope', 'AuthService', function ($scope, AuthService) {
+        AuthService.customMethod();
+    }]);
+```
+
+**Note:** you cannot override native methods of the `AuthService`
+(e.g. [`AuthService#login`](#login-method))
 
 ## AuthService
 This `angular-spa-auth` module supplies `AuthService` which can be injected
@@ -558,12 +594,20 @@ AuthService.logout()
 
 ### getCurrentUser method
 
-If user already authenticated then it returns user model from $rootScope.currentUser.
+If user already authenticated then it returns user model from `$rootScope.currentUser`.
 If not then tries to load user model from backend and returns promise
 
 ###### Example
 ```js
 var user = AuthService.getCurrentUser()
+doSomething(user);
+```
+
+###### Example
+```js
+AuthService.getCurrentUser().then(function(user) {
+    doSomething(user);
+})
 ```
 
 ### refreshCurrentUser method
@@ -649,42 +693,10 @@ AuthService.openHome()
 ```
 
 ### Mixins Methods
-All the methods that were added using `mixins` property of `config` object
-will be available in the `AuthService` as its own methods.
 
-###### Example
+You can extend `AuthService` using mixins.
 
-**app.run.js**
-
-```js
-angular
-    .module('app')
-    .run(['AuthService', function (AuthService) {
-        var config = {...}
-        AuthService.run({
-            mixins: {
-                customMethod: function() {
-                    ...
-                    // your logic here
-                    ...
-                }
-            }
-        });
-    }]);
-```
-
-**main.controller.js**
-
-```js
-angular
-    .module('app')
-    .controller('MainController', ['$scope', 'AuthService', function ($scope, AuthService) {
-        AuthService.customMethod();
-    }]);
-```
-
-**Note:** you cannot override native methods of the `AuthService`
-(e.g. [`AuthService#login`](#login-method))
+For more details please see the [Mixins](#mixins) section
 
 # License
 
