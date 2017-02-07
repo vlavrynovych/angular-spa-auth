@@ -146,25 +146,45 @@
 
             // ------------------------------------------------------------------------/// Public
             var service = {
+                /**
+                 * Returns true if provide route url is in the list of public urls
+                 * @param {String} url route path that should be checked
+                 * @returns {boolean} true if url is in the list of public urls
+                 */
                 isPublic: function (url) {
                     return config.publicUrls.some(function (publicUrl) {
                         return url.indexOf(publicUrl) > -1;
                     });
                 },
+                /**
+                 * Saves current route as a target route
+                 */
                 saveTarget: function () {
                     config.uiRoutes.target = $location.path();
                     info('Target route is saved: ' + config.uiRoutes.target);
                 },
+                /**
+                 * Redirects user to the saved target route if exists or to the home page
+                 */
                 openTarget: function () {
                     config.uiRoutes.target = config.uiRoutes.target || config.handlers.getHomePage($rootScope.currentUser);
                     goTo(config.uiRoutes.target);
                     info('Redirected to the target route: ' + config.uiRoutes.target);
                     service.clearTarget()
                 },
+                /**
+                 * Clears saved target route
+                 */
                 clearTarget: function () {
                     config.uiRoutes.target = null;
                 },
+                /**
+                 * Redirects user to the login page
+                 */
                 openLogin: openLogin,
+                /**
+                 * Redirects user to the home page
+                 */
                 openHome: function () {
                     goTo(config.handlers.getHomePage($rootScope.currentUser));
                 },
@@ -188,31 +208,56 @@
                         return user;
                     })
                 },
+                /**
+                 * Returns true if user is authenticated
+                 * Warning! It does not check backend.
+                 * @returns {boolean} true if user is authenticated
+                 */
                 isAuthenticated: function () {
                     return !!$rootScope.currentUser;
                 },
+                /**
+                 * Logs user out from the system and redirects it to the login page
+                 */
                 logout: function () {
                     $http.get(config.endpoints.logout).then(function () {
                         $rootScope.currentUser = null;
                         openLogin();
                     });
                 },
-                run: function (options) {
-                    if (options) {
-                        config = angular.merge(config, options);
+                /**
+                 * Allows you to configure angular-spa-auth module and start the init process.
+                 * Should be called in the #run method of you module
+                 * @param {Object} configuration contains all the configs
+                 * @param {String=} configuration.verbose activates console.info output if true
+                 * @param {String[]=} configuration.publicUrls list url that are available for unauthorized users
+                 * @param {Object=} configuration.endpoints gives you ability to setup all the backed endpoints that will own roles in the authentication process
+                 * @param {Object=} configuration.uiRoutes helps you automatically redirect user to the specified UI routes such as home and login
+                 * @param {String=} configuration.uiRoutes.home home route
+                 * @param {String=} configuration.uiRoutes.login login route
+                 * @param {Object=} configuration.handlers allows you to provide you implementation for key methods of authentication process
+                 * @param {Object=} configuration.mixins allows you to extend AuthService
+                 */
+                run: function (configuration) {
+                    if (configuration) {
+                        config = angular.merge(config, configuration);
 
-                        if (options.mixins) {
-                            for(var prop in options.mixins) {
+                        if (configuration.mixins) {
+                            for(var prop in configuration.mixins) {
                                 if(service.hasOwnProperty(prop)){
                                     throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE + prop)
                                 }
                             }
 
-                            angular.merge(service, options.mixins);
+                            angular.merge(service, configuration.mixins);
                         }
                     }
                     init()
                 },
+                /**
+                 * Login user using provided credentials
+                 * @param {Object} credentials object with any type of information that is needed to compelete authentication process
+                 */
                 login: function (credentials) {
                     config.handlers.login(credentials)
                         .then(service.refreshCurrentUser())
