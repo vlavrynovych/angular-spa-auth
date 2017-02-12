@@ -10,9 +10,9 @@
   "description": "Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA",
   "homepage": "https://vlavrynovych.github.io/angular-spa-auth/",
   "bugs": {
-    "url" : "https://github.com/vlavrynovych/angular-spa-auth/issues"
+    "url": "https://github.com/vlavrynovych/angular-spa-auth/issues"
   },
-  "repository" : {
+  "repository": {
     "type": "git",
     "url": "https://github.com/vlavrynovych/angular-spa-auth.git"
   },
@@ -25,6 +25,9 @@
     "route-segment"
   ],
   "license": "MIT",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start"
+  },
   "devDependencies": {
     "bower": "1.7.9",
     "del": "2.2.0",
@@ -32,6 +35,13 @@
     "gulp-concat": "2.6.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "2.4.0",
-    "gulp-uglify": "1.5.3"
+    "gulp-uglify": "1.5.3",
+    "jasmine-core": "2.5.2",
+    "karma": "1.4.1",
+    "karma-chrome-launcher": "2.0.0",
+    "karma-jasmine": "1.1.0",
+    "angular": "1.6.2",
+    "angular-mocks": "1.6.2",
+    "angular-route": "1.6.2"
   }
 }

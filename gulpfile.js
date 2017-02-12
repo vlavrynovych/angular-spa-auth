@@ -5,7 +5,8 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     sourcemaps = require('gulp-sourcemaps'),
     rename = require('gulp-rename'),
-    del = require('del');
+    del = require('del'),
+    Server = require('karma').Server;
 
 var DIST = 'dist';
 var DIST_NAME = 'angular-spa-auth.js';
@@ -13,6 +14,13 @@ var DIST_NAME = 'angular-spa-auth.js';
 var JS = [
     'src/**/*.js'
 ];
+
+gulp.task('test', function (done) {
+    new Server({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, done).start();
+});
 
 gulp.task('concat', function () {
     return gulp.src(JS, {base: 'app'})
@@ -34,5 +42,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('build', gulp.series('clean', 'concat'));
+
+gulp.task('buildAndTest', gulp.series('clean', 'concat', 'test'));
 
 gulp.task('default', gulp.series('build', 'watch'));
