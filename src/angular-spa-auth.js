@@ -127,8 +127,9 @@
                 }
 
                 return $http.get(config.endpoints.isAuthenticated).then(function (response) {
-                    info('isAuthenticated: ' + response.data);
-                    return response.data ? response.data : $q.reject(response.data);
+                    var isAuth = JSON.parse(response.data);
+                    info('isAuthenticated: ' + isAuth);
+                    return isAuth || $q.reject(response.data);
                 });
             }
 
