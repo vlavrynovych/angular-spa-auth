@@ -6,6 +6,7 @@
             var authenticatedOnStart = window.location.href.indexOf('authenticated') > 0;
 
             AuthService.run({
+                publicUrls: ['/home', '/login', '/public'],
                 verbose: true,
                 endpoints: {
                     isAuthenticated: authenticatedOnStart ? './endpoints/isAuthenticatedTrue.json' : './endpoints/isAuthenticatedFalse.json',

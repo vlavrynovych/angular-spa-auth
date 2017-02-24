@@ -1,0 +1,10 @@
+<h1 class="page-header">Public Page
+    <small>This page is visible all the time</small>
+</h1>
+
+<div ng-show="currentUser">
+    Hi {{currentUser.name}}
+</div>
+<div ng-hide="currentUser">
+    Please log in.
+</div>

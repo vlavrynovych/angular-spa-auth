@@ -8,6 +8,8 @@
             $routeProvider.when('/home', {
                 templateUrl: './home/home.html',
                 controller: 'HomeController'
+            }).when('/public', {
+                templateUrl: './public/public.html'
             }).when('/login', {
                 templateUrl: './login/login.html',
                 controller: 'LoginController'

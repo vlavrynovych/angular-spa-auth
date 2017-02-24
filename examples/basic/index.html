@@ -25,6 +25,7 @@
     <br>
     <div class="well well-sm" ng-controller="MenuController">
         <a class="btn btn-link" href="#!/home">Home</a>
+        <a class="btn btn-link" href="#!/public">Public</a>
         <a class="btn btn-link" ng-class="{'text-muted': currentUser}" href="#!/login">Login</a>
         <a class="btn btn-link" ng-class="{'text-muted': !currentUser}" href="#!/private">Private Page</a>
         <a class="btn btn-link" ng-class="{'text-muted': !currentUser}" ng-click="logout()">Logout</a>

@@ -12,11 +12,11 @@
 
     angular.module('angular-spa-auth', ['ngRoute'])
         .run(['$rootScope', '$location', '$timeout', 'AuthService', function ($rootScope, $location, $timeout, AuthService) {
+            AuthService.saveTarget();
             $rootScope.$on('$routeChangeStart', function (event, next) {
                 // if not logged yet then save target route
                 if ((!AuthService.isAuthenticated())) {
                     if (next.$$route && !AuthService.isPublic(next.$$route.originalPath)) {
-                        AuthService.saveTarget();
                         event.preventDefault();
                         $timeout(function () {
                             console.info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
