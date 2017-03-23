@@ -261,7 +261,7 @@
                  */
                 login: function (credentials) {
                     config.handlers.login(credentials)
-                        .then(service.refreshCurrentUser())
+                        .then(service.refreshCurrentUser)
                         .then(config.handlers.success)
                         .catch(config.handlers.error);
                 }
