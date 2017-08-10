@@ -5,6 +5,7 @@
         UNAUTHORIZED_REDIRECT_TO_LOGIN: 'Unauthorized: redirecting to the login page',
         MISSING_CURRENT_USER_ENDPOINT: 'Endpoint for current user is not specified',
         MISSING_LOGIN_ENDPOINT: 'Login endpoint is not specified',
+        MISSING_LOGOUT_ENDPOINT: 'Logout endpoint is not specified',
         SUCCESS_AUTH: 'Successfully authenticated',
         ERROR_OCCURS: 'Error occurs',
         CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process: '
@@ -87,6 +88,19 @@
                         return $http.post(config.endpoints.login, credentials)
                     },
 
+                    logout: function () {
+                        if(!config.endpoints.logout) {
+                            throw new Error(MESSAGES.MISSING_LOGOUT_ENDPOINT)
+                        }
+
+                        return $http.get(config.endpoints.logout).then(function () {
+                            $rootScope.currentUser = null;
+                            openLogin();
+                        }, function (err) {
+                            console.error(err);
+                        });
+                    },
+
                     /**
                      * Success handler
                      * @param {*} data received from backend
@@ -147,6 +161,8 @@
 
             // ------------------------------------------------------------------------/// Public
             var service = {
+                config: config,
+
                 /**
                  * Returns true if provide route url is in the list of public urls
                  * @param {String} url route path that should be checked
@@ -154,7 +170,7 @@
                  */
                 isPublic: function (url) {
                     return config.publicUrls.some(function (publicUrl) {
-                        return publicUrl.startsWith(url);
+                        return url && publicUrl.startsWith(url);
                     });
                 },
                 /**
@@ -221,10 +237,7 @@
                  * Logs user out from the system and redirects it to the login page
                  */
                 logout: function () {
-                    $http.get(config.endpoints.logout).then(function () {
-                        $rootScope.currentUser = null;
-                        openLogin();
-                    });
+                    return config.handlers.logout();
                 },
                 /**
                  * Allows you to configure angular-spa-auth module and start the init process.
