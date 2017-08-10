@@ -44,6 +44,7 @@ the authentication process and route change for the [AngularJS](https://angularj
             - [#getHomePage(user)](#gethomepage-handler)
             - [#getUser()](#getuser-handler)
             - [#login(credentials)](#login-handler)
+            - [#logout()](#logout-handler)
             - [#success(data)](#success-handler)
             - [#error(err)](#error-handler)
         - [Mixins](#mixins)
@@ -337,6 +338,7 @@ Instead of using [endpoints](#endpoints) configuration you can use your own impl
 - [#getHomePage(user)](#gethomepage-handler)
 - [#getUser()](#getuser-handler)
 - [#login(credentials)](#login-handler)
+- [#logout()](#logout-handler)
 - [#success(data)](#success-handler)
 - [#error(err)](#error-handler)
 
@@ -474,6 +476,43 @@ AuthService.run({
 ```
 
 **Note:** `$auth` service is provided by [`satellizer`](https://github.com/sahat/satellizer) module
+
+#### logout handler
+
+Overriding this handler you should implement your logout logic. Instead of standard GET request you can send POST and provide another way
+
+**Output**
+
+| Type | Description |
+|:----:|:----:|
+| `Promise` | Promise where success callback means that logout operation was successfully completed |
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        logout: function() {
+            return $http.post('/api/logout');
+        }
+    },
+    ...
+})
+```
+
+###### Example
+```js
+AuthService.run({
+    ...
+    handlers: {
+        logout: function() {
+            return Firebase.logout()
+        }
+    },
+    ...
+})
+```
+
 
 #### success handler
 
