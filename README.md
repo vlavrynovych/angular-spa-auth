@@ -5,7 +5,7 @@
 [![NPM Version][npm-image]][npm-url]
 [![Bower](https://img.shields.io/bower/v/angular-spa-auth.svg)]()
 [![NPM Downloads][downloads-image]][downloads-url]
-<!--[![Build Status][travis-image]][travis-url]-->
+[![Build Status](https://travis-ci.org/vlavrynovych/angular-spa-auth.svg?branch=develop)](https://travis-ci.org/vlavrynovych/angular-spa-auth)
 
 [![NPM](https://nodei.co/npm/angular-spa-auth.png?downloads=true)](https://nodei.co/npm/angular-spa-auth/)
 
