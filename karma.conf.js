@@ -18,7 +18,7 @@ module.exports = function(config) {
         'node_modules/string.prototype.startswith/startswith.js',
         'src/*',
         'test/app.js',
-        'test/test.js'
+        'test/**/*.js'
     ],
 
 

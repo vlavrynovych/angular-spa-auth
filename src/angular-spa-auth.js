@@ -147,6 +147,8 @@
 
             // ------------------------------------------------------------------------/// Public
             var service = {
+                config: config,
+
                 /**
                  * Returns true if provide route url is in the list of public urls
                  * @param {String} url route path that should be checked
@@ -154,7 +156,7 @@
                  */
                 isPublic: function (url) {
                     return config.publicUrls.some(function (publicUrl) {
-                        return publicUrl.startsWith(url);
+                        return url && publicUrl.startsWith(url);
                     });
                 },
                 /**
