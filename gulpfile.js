@@ -11,7 +11,8 @@ var DIST = 'dist';
 var DIST_NAME = 'angular-spa-auth.js';
 
 var JS = [
-    'src/**/*.js'
+    'src/**/*.js',
+    'node_modules/string.prototype.startswith/startswith.js'
 ];
 
 gulp.task('concat', function () {
@@ -21,7 +22,7 @@ gulp.task('concat', function () {
         .pipe(gulp.dest(DIST))
         .pipe(uglify())
         .pipe(rename({ extname: '.min.js' }))
-        .pipe(sourcemaps.write('.'))
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(DIST));
 });
 

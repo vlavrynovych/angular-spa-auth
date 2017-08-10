@@ -25,7 +25,9 @@
     "scripts",
     "src",
     "_config.yml",
-    "gulpfile.js"
+    "gulpfile.js",
+    "karma.conf.js",
+    ".travis.yml"
   ],
   "dependencies": {
     "angular": ">=1.5.0"

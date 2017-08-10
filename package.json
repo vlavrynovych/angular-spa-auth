@@ -10,11 +10,14 @@
   "description": "Provides ability to easily handle most of the logic related to the authentication process and page load for the AngularJS SPA",
   "homepage": "https://vlavrynovych.github.io/angular-spa-auth/",
   "bugs": {
-    "url" : "https://github.com/vlavrynovych/angular-spa-auth/issues"
+    "url": "https://github.com/vlavrynovych/angular-spa-auth/issues"
   },
-  "repository" : {
+  "repository": {
     "type": "git",
     "url": "https://github.com/vlavrynovych/angular-spa-auth.git"
+  },
+  "scripts": {
+    "test": "node_modules/karma/bin/karma start karma.conf.js"
   },
   "keywords": [
     "angular",
@@ -26,6 +29,18 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "angular": "1.5.5",
+    "angular-mocks": "1.6.2",
+    "angular-route": "1.5.6",
+    "istanbul": "0.4.5",
+    "jasmine-core": "2.5.2",
+    "karma": "1.5.0",
+    "karma-chrome-launcher": "2.0.0",
+    "karma-coverage": "1.1.1",
+    "karma-jasmine": "1.1.0",
+    "karma-mocha": "1.3.0",
+    "karma-phantomjs-launcher": "1.0.2",
+    "phantomjs": "2.1.7",
     "bower": "1.7.9",
     "del": "2.2.0",
     "gulp": "gulpjs/gulp#4.0",
@@ -33,5 +48,8 @@
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "2.4.0",
     "gulp-uglify": "1.5.3"
+  },
+  "dependencies": {
+    "string.prototype.startswith": "0.2.0"
   }
 }

@@ -154,7 +154,7 @@
                  */
                 isPublic: function (url) {
                     return config.publicUrls.some(function (publicUrl) {
-                        return url.indexOf(publicUrl) > -1;
+                        return publicUrl.startsWith(url);
                     });
                 },
                 /**
