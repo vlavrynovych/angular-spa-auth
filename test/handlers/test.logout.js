@@ -31,11 +31,8 @@ describe('Handlers: ', function () {
             expect($location.path()).toEqual('/login');
 
             //when: setup custom logout handler with a POST method
-            var logoutCalled = false;
-            setup(function () {
-                return $http.post(customLogoutPath).then(function () {
-                    logoutCalled = true;
-                })
+            setupAndSpy(function () {
+                return $http.post(customLogoutPath);
             });
 
             //and: call custom logout
@@ -43,27 +40,30 @@ describe('Handlers: ', function () {
             $httpBackend.flush();
 
             //then: check if called
-            expect(logoutCalled).toEqual(true, 'custom logout not called');
+            checkIfCalled();
         });
 
         it('on fail', function () {
+            //given:
+            var failed = false;
+
             //when: setup custom logout handler with a GET method that should fail
-            var logoutCalledOnFail = false;
-            setup(function () {
+            setupAndSpy(function () {
                 return $http.get(customLogoutPath);
             });
 
             //and: call custom logout
             AuthService.logout().catch(function () {
-                logoutCalledOnFail = true;
+                failed = true;
             });
             $httpBackend.flush();
 
             //then: check if called
-            expect(logoutCalledOnFail).toEqual(true, 'custom logout does not failed');
+            checkIfCalled();
+            expect(failed).toEqual(true, 'custom logout does not fail');
         });
         
-        function setup(logoutHandler) {
+        function setupAndSpy(logoutHandler) {
             AuthService.run({
                 endpoints: {
                     currentUser: currentUserPath
@@ -72,6 +72,13 @@ describe('Handlers: ', function () {
                     logout: logoutHandler
                 }
             });
+
+            spyOn(AuthService.config.handlers, 'logout').and.callThrough();
+        }
+
+        function checkIfCalled() {
+            expect(AuthService.config.handlers.logout).toHaveBeenCalled();
+            expect(AuthService.config.handlers.logout.calls.count()).toEqual(1);
         }
     });
 });
