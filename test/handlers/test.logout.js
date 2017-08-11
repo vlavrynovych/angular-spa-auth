@@ -43,7 +43,7 @@ describe('Handlers: ', function () {
             checkIfCalled();
         });
 
-        it('on fail', function () {
+        it('custom logout handler fails', function () {
             //given:
             var failed = false;
 
@@ -60,6 +60,36 @@ describe('Handlers: ', function () {
 
             //then: check if called
             checkIfCalled();
+            expect(failed).toEqual(true, 'custom logout does not fail');
+        });
+
+        it('no logout endpoint', function () {
+            //given: logout endpoint is not specified
+            AuthService.config.endpoints.logout = null;
+
+            //then: validation error
+            expect(function() {
+                AuthService.logout();
+            }).toThrowError("Logout endpoint is not specified");
+        });
+
+        it('default logout handler fails', function () {
+            //given: logout endpoint returns 500
+            AuthService.run({
+                endpoints: {
+                    currentUser: currentUserPath,
+                    logout: customLogoutPath
+                }
+            });
+
+            //when:
+            var failed = false;
+            AuthService.logout().catch(function () {
+                failed = true;
+            });
+            $httpBackend.flush();
+            
+            //then: validation error
             expect(failed).toEqual(true, 'custom logout does not fail');
         });
         

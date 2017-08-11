@@ -96,8 +96,6 @@
                         return $http.get(config.endpoints.logout).then(function () {
                             $rootScope.currentUser = null;
                             openLogin();
-                        }, function (err) {
-                            console.error(err);
                         });
                     },
 
