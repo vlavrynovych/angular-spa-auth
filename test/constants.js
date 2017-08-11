@@ -3,7 +3,8 @@ var ENDPOINTS = {
     LOGIN_ERROR: '/login-error',
     LOGOUT_SUCCESS: '/logout-success',
     LOGOUT_ERROR: '/logout-error',
-    CURRENT_USER: '/current-user'
+    CURRENT_USER_SUCCESS: '/current-user-success',
+    CURRENT_USER_ERROR: '/current-user-error'
 };
 
 var credentials = {

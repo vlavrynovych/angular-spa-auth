@@ -1,4 +1,4 @@
-describe('Handlers: ', function () {
+describe('Handlers:', function () {
     var AuthService, $location, $http, $httpBackend;
 
     beforeEach(module('angular-spa-auth'));
@@ -8,16 +8,16 @@ describe('Handlers: ', function () {
         $http = _$http_;
         $httpBackend = _$httpBackend_;
 
-        //setup
+        //setup backend
         $httpBackend.whenGET(AuthService.config.endpoints.logout).respond(200);
         $httpBackend.whenGET(ENDPOINTS.LOGOUT_SUCCESS).respond(200);
         $httpBackend.whenGET(ENDPOINTS.LOGOUT_ERROR).respond(500);
 
-        AuthService.config.endpoints.currentUser = ENDPOINTS.CURRENT_USER;
-        $httpBackend.whenGET(ENDPOINTS.CURRENT_USER).respond(200, USER);
+        AuthService.config.endpoints.currentUser = ENDPOINTS.CURRENT_USER_SUCCESS;
+        $httpBackend.whenGET(ENDPOINTS.CURRENT_USER_SUCCESS).respond(200, USER);
     }));
 
-    describe('logout: ', function () {
+    describe('logout():', function () {
         it('basic check', function () {
             //given: '' is default state
             expect($location.path()).toEqual('');
@@ -59,7 +59,7 @@ describe('Handlers: ', function () {
 
             //then: check if called
             checkIfCalled();
-            expect(failed).toEqual(true, 'custom logout does not fail');
+            expect(failed).toBeTruthy('custom login does not fail');
         });
 
         it('no logout endpoint', function () {
@@ -88,7 +88,7 @@ describe('Handlers: ', function () {
             $httpBackend.flush();
             
             //then: validation error
-            expect(failed).toEqual(true, 'custom logout does not fail');
+            expect(failed).toBeTruthy('custom login does not fail');
         });
         
         function setupAndSpy(logoutHandler) {

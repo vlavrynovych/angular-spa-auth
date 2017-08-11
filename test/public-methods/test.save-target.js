@@ -1,4 +1,4 @@
-describe('Public methods: ', function () {
+describe('Public methods:', function () {
     var AuthService, $location;
 
     beforeEach(module('angular-spa-auth'));
@@ -7,7 +7,7 @@ describe('Public methods: ', function () {
         $location = _$location_
     }));
 
-    describe('saveTarget(): ', function () {
+    describe('saveTarget():', function () {
         it('basic check', function () {
             //given: null is a default state
             expect(AuthService.config.uiRoutes.target).toBeNull();

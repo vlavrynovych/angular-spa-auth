@@ -1,4 +1,4 @@
-describe('Public methods: ', function () {
+describe('Public methods:', function () {
     var AuthService;
 
     beforeEach(module('angular-spa-auth'));
@@ -6,7 +6,7 @@ describe('Public methods: ', function () {
         AuthService = _AuthService_;
     }));
 
-    describe('isPublic(): ', function () {
+    describe('isPublic():', function () {
         it('basic check', function () {
             check('/login', true);
             check('/manage/login-sessions', false);
