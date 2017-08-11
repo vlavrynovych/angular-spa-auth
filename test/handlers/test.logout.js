@@ -1,7 +1,5 @@
 describe('Handlers: ', function () {
     var AuthService, $location, $http, $httpBackend;
-    var customLogoutPath = '/custom-logout';
-    var currentUserPath = '/current-user';
 
     beforeEach(module('angular-spa-auth'));
     beforeEach(inject(function(_AuthService_, _$location_, _$httpBackend_, _$http_){
@@ -12,10 +10,11 @@ describe('Handlers: ', function () {
 
         //setup
         $httpBackend.whenGET(AuthService.config.endpoints.logout).respond(200);
-        $httpBackend.whenGET(customLogoutPath).respond(500);
-        $httpBackend.whenPOST(customLogoutPath).respond(200);
+        $httpBackend.whenGET(ENDPOINTS.LOGOUT_SUCCESS).respond(200);
+        $httpBackend.whenGET(ENDPOINTS.LOGOUT_ERROR).respond(500);
 
-        $httpBackend.whenGET(currentUserPath).respond(200, {username: 'jdoe'});
+        AuthService.config.endpoints.currentUser = ENDPOINTS.CURRENT_USER;
+        $httpBackend.whenGET(ENDPOINTS.CURRENT_USER).respond(200, USER);
     }));
 
     describe('logout: ', function () {
@@ -30,9 +29,9 @@ describe('Handlers: ', function () {
             //then: should redirect to login page
             expect($location.path()).toEqual('/login');
 
-            //when: setup custom logout handler with a POST method
+            //when: setup custom logout handler with a GET method
             setupAndSpy(function () {
-                return $http.post(customLogoutPath);
+                return $http.get(ENDPOINTS.LOGOUT_SUCCESS);
             });
 
             //and: call custom logout
@@ -49,7 +48,7 @@ describe('Handlers: ', function () {
 
             //when: setup custom logout handler with a GET method that should fail
             setupAndSpy(function () {
-                return $http.get(customLogoutPath);
+                return $http.get(ENDPOINTS.LOGOUT_ERROR);
             });
 
             //and: call custom logout
@@ -77,8 +76,7 @@ describe('Handlers: ', function () {
             //given: logout endpoint returns 500
             AuthService.run({
                 endpoints: {
-                    currentUser: currentUserPath,
-                    logout: customLogoutPath
+                    logout: ENDPOINTS.LOGOUT_ERROR
                 }
             });
 
@@ -95,9 +93,6 @@ describe('Handlers: ', function () {
         
         function setupAndSpy(logoutHandler) {
             AuthService.run({
-                endpoints: {
-                    currentUser: currentUserPath
-                },
                 handlers: {
                     logout: logoutHandler
                 }

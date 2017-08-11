@@ -85,7 +85,7 @@
                             throw new Error(MESSAGES.MISSING_LOGIN_ENDPOINT)
                         }
 
-                        return $http.post(config.endpoints.login, credentials)
+                        return $http.post(config.endpoints.login, credentials);
                     },
 
                     logout: function () {
@@ -122,8 +122,16 @@
 
             // ------------------------------------------------------------------------/// Private
             function info(message) {
+                _log(console.info, message)
+            }
+
+            function error(err) {
+                _log(console.error, err);
+            }
+            
+            function _log(fn, msg) {
                 if(config.verbose) {
-                    console.info(message)
+                    fn && fn(msg)
                 }
             }
 
@@ -148,13 +156,26 @@
             function init() {
                 isAuthenticated().then(function () {
                     service.refreshCurrentUser()
-                        .then(config.handlers.success, config.handlers.error)
-                        .catch(openLogin);
+                        .then(config.handlers.success)
+                        .catch(function (err) {
+                            openLogin();
+                            return onError(err);
+                        })
                 })
             }
 
             function openLogin() {
                 goTo(config.uiRoutes.login);
+            }
+
+            function onError(err) {
+                error(err);
+                config.handlers.error(err);
+                return $q.reject(err);
+            }
+
+            function getHome() {
+                return config.handlers.getHomePage($rootScope.currentUser);
             }
 
             // ------------------------------------------------------------------------/// Public
@@ -175,16 +196,16 @@
                  * Saves current route as a target route
                  */
                 saveTarget: function () {
-                    config.uiRoutes.target = $location.path();
+                    config.uiRoutes.target = $location.path() || null;
                     info('Target route is saved: ' + config.uiRoutes.target);
                 },
                 /**
                  * Redirects user to the saved target route if exists or to the home page
                  */
                 openTarget: function () {
-                    config.uiRoutes.target = config.uiRoutes.target || config.handlers.getHomePage($rootScope.currentUser);
-                    goTo(config.uiRoutes.target);
-                    info('Redirected to the target route: ' + config.uiRoutes.target);
+                    var target = config.uiRoutes.target || getHome();
+                    goTo(target);
+                    info('Redirected to the target route: ' + target);
                     service.clearTarget()
                 },
                 /**
@@ -201,7 +222,7 @@
                  * Redirects user to the home page
                  */
                 openHome: function () {
-                    goTo(config.handlers.getHomePage($rootScope.currentUser));
+                    goTo(getHome());
                 },
                 /**
                  * Returns saved current user or load it from backed
@@ -271,10 +292,10 @@
                  * @param {Object} credentials object with any type of information that is needed to compelete authentication process
                  */
                 login: function (credentials) {
-                    config.handlers.login(credentials)
+                    return config.handlers.login(credentials)
                         .then(service.refreshCurrentUser)
                         .then(config.handlers.success)
-                        .catch(config.handlers.error);
+                        .catch(onError);
                 }
             };
 

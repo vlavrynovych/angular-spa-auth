@@ -9,8 +9,8 @@ describe('Public methods: ', function () {
 
     describe('openTarget(): ', function () {
         it('basic check', function () {
-            //given: '' is default state
-            expect(AuthService.config.uiRoutes.target).toEqual('');
+            //given: null is default state
+            expect(AuthService.config.uiRoutes.target).toBeNull();
 
             //when: go to login page and save
             $location.path('/login-test');
@@ -52,6 +52,7 @@ describe('Public methods: ', function () {
             //then: we are on the login page
             expect($location.path()).toEqual(expectedUrl);
             // -> should automatically clean saved target
+            expect(AuthService.config.uiRoutes.target).toBeNull();
 
             //when: open saved target again
             AuthService.openTarget();
