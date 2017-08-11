@@ -7,7 +7,6 @@
         MISSING_LOGIN_ENDPOINT: 'Login endpoint is not specified',
         MISSING_LOGOUT_ENDPOINT: 'Logout endpoint is not specified',
         SUCCESS_AUTH: 'Successfully authenticated',
-        ERROR_OCCURS: 'Error occurs',
         CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process: '
     };
 
@@ -66,7 +65,7 @@
                         }
 
                         return $http.get(config.endpoints.currentUser).then(function (response) {
-                            info('current user: ' + JSON.stringify(response.data));
+                            info('Current user: ' + JSON.stringify(response.data));
                             return response.data
                         })
                     },
@@ -111,11 +110,7 @@
                      * Error handler
                      * @param {*} err backend error object
                      */
-                    error: function (err) {
-                        if(config.verbose) {
-                            console.error(MESSAGES.ERROR_OCCURS, err)
-                        }
-                    }
+                    error: error
                 },
                 mixins: {}
             };
@@ -137,6 +132,7 @@
 
             function goTo(route) {
                 $location.path(route);
+                info('Redirected to the ' + route);
             }
 
             function isAuthenticated() {
@@ -154,14 +150,15 @@
             }
 
             function init() {
-                isAuthenticated().then(function () {
-                    service.refreshCurrentUser()
-                        .then(config.handlers.success)
-                        .catch(function (err) {
-                            openLogin();
-                            return onError(err);
-                        })
-                })
+                isAuthenticated()
+                    .then(service.refreshCurrentUser)
+                    .then(function (user) {
+                        config.handlers.success(user);
+                    })
+                    .catch(function (err) {
+                        openLogin();
+                        return onError(err);
+                    });
             }
 
             function openLogin() {
@@ -205,7 +202,6 @@
                 openTarget: function () {
                     var target = config.uiRoutes.target || getHome();
                     goTo(target);
-                    info('Redirected to the target route: ' + target);
                     service.clearTarget()
                 },
                 /**

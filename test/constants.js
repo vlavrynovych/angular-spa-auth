@@ -4,7 +4,9 @@ var ENDPOINTS = {
     LOGOUT_SUCCESS: '/logout-success',
     LOGOUT_ERROR: '/logout-error',
     CURRENT_USER_SUCCESS: '/current-user-success',
-    CURRENT_USER_ERROR: '/current-user-error'
+    CURRENT_USER_ERROR: '/current-user-error',
+    IS_AUTHENTICATED_SUCCESS: '/is-authenticated-success',
+    IS_AUTHENTICATED_ERROR: '/is-authenticated-error'
 };
 
 var credentials = {
