@@ -17,8 +17,7 @@
     "url": "https://github.com/vlavrynovych/angular-spa-auth.git"
   },
   "scripts": {
-    "test": "node_modules/karma/bin/karma start karma.conf.js",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "test": "node_modules/karma/bin/karma start karma.conf.js"
   },
   "keywords": [
     "angular",
