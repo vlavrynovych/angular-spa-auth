@@ -6,6 +6,7 @@
 [![Bower](https://img.shields.io/bower/v/angular-spa-auth.svg)]()
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status](https://travis-ci.org/vlavrynovych/angular-spa-auth.svg?branch=develop)](https://travis-ci.org/vlavrynovych/angular-spa-auth)
+[![Coverage Status](https://coveralls.io/repos/vlavrynovych/angular-spa-auth/badge.svg?branch=develop)](https://coveralls.io/r/vlavrynovych/angular-spa-auth?branch=develop)
 
 [![NPM](https://nodei.co/npm/angular-spa-auth.png?downloads=true)](https://nodei.co/npm/angular-spa-auth/)
 
@@ -13,8 +14,6 @@
 [npm-url]: https://npmjs.org/package/angular-spa-auth
 [downloads-image]: https://img.shields.io/npm/dm/angular-spa-auth.svg?style=flat
 [downloads-url]: https://npmjs.org/package/angular-spa-auth
-<!--[travis-image]: https://travis-ci.org/UnbounDev/angular-spa-auth.svg?branch=master&style=flat-->
-<!--[travis-url]: https://travis-ci.org/UnbounDev/angular-spa-auth-->
 
 Frontend module that provides ability to easily handle most of the logic related to
 the authentication process and route change for the [AngularJS](https://angularjs.org/)
