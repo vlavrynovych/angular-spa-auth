@@ -6,7 +6,7 @@
 [![Bower](https://img.shields.io/bower/v/angular-spa-auth.svg)]()
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Build Status](https://travis-ci.org/vlavrynovych/angular-spa-auth.svg?branch=develop)](https://travis-ci.org/vlavrynovych/angular-spa-auth)
-[![Coverage Status](https://coveralls.io/repos/vlavrynovych/angular-spa-auth/badge.svg?branch=develop)](https://coveralls.io/r/vlavrynovych/angular-spa-auth?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/vlavrynovych/angular-spa-auth/badge.svg?branch=develop)](https://coveralls.io/github/vlavrynovych/angular-spa-auth?branch=develop)
 
 [![NPM](https://nodei.co/npm/angular-spa-auth.png?downloads=true)](https://nodei.co/npm/angular-spa-auth/)
 
