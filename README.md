@@ -46,7 +46,6 @@ the authentication process and route change for the [AngularJS](https://angularj
             - [#logout()](#logout-handler)
             - [#success(data)](#success-handler)
             - [#error(err)](#error-handler)
-        - [Mixins](#mixins)
     - [AuthService](#authservice)
         - [#run(config)](#run-method)
         - [#login(credentials)](#login-method)
@@ -60,14 +59,12 @@ the authentication process and route change for the [AngularJS](https://angularj
         - [#openTarget()](#opentarget-method)
         - [#openLogin()](#openlogin-method)
         - [#openHome()](#openhome-method)
-        - [Mixins Methods](#mixins-methods)
 - [License](#license)
 
 # Features
 - Handles for you all the work related to authentication process and route change
 - Saves original/target route and redirects user to it after login/authentication check
 - Very customizable and flexible
-- Has ability to extend [AuthService](#authservice) using your own methods - [mixins](#mixins)
 - Works perfect with both: [**angular-route**](https://www.npmjs.com/package/angular-route)
 ([**ngRoute**](https://www.npmjs.com/package/angular-route)) and
 [**angular-route-segment**](http://angular-route-segment.com/).
@@ -139,13 +136,6 @@ First of all you have to pass `config` object to the [AuthService#run](#run-meth
                         error: function () {
                             toastr.error('Unable to authenticate.');
                         }
-                    },
-                    mixins: {
-                        find: function (id) {
-                            return $http.get('/auth/find?id=' + id).then(function (response) {
-                                return response.data;
-                            });
-                        }
                     }
                 });
             }]);
@@ -161,7 +151,6 @@ The `config` object have different field for customizing you authentication proc
 | [endpoints](#endpoints) | `Object` | Gives you ability to setup all the backed endpoints that will own roles in the authentication process |
 | [uiRoutes](#ui-routes) | `Object` | Helps you automatically redirect user to the specified UI routes such as `home` and `login` |
 | [handlers](#handlers) | `Object` | Allows you to provide you implementation for key methods of authentication process |
-| [mixins](#mixins) | `Object` | Allows you to extend [`AuthService`](#authservice)  |
 
 ### Verbose
 For development perspective you can enable **console.info** message using `verbose` parameter
@@ -547,45 +536,6 @@ AuthService.run({
 })
 ```
 
-### Mixins
-
-All the methods that are added using `mixins` property of `config` object
-will be available in the `AuthService` as its own methods.
-
-###### Example
-
-**app.run.js**
-
-```js
-angular
-    .module('app')
-    .run(['AuthService', function (AuthService) {
-        var config = {...}
-        AuthService.run({
-            mixins: {
-                customMethod: function() {
-                    ...
-                    // your logic here
-                    ...
-                }
-            }
-        });
-    }]);
-```
-
-**main.controller.js**
-
-```js
-angular
-    .module('app')
-    .controller('MainController', ['$scope', 'AuthService', function ($scope, AuthService) {
-        AuthService.customMethod();
-    }]);
-```
-
-**Note:** you cannot override native methods of the `AuthService`
-(e.g. [`AuthService#login`](#login-method))
-
 ## AuthService
 This `angular-spa-auth` module supplies `AuthService` which can be injected
 in any place of the project allowed by AngularJS
@@ -607,7 +557,6 @@ Public methods:
 - [#openTarget()](#opentarget-method)
 - [#openLogin()](#openlogin-method)
 - [#openHome()](#openhome-method)
-- [Mixins Methods](#mixins-methods)
 
 
 ### run method
@@ -752,12 +701,6 @@ Redirects user to the home page
 ```js
 AuthService.openHome()
 ```
-
-### Mixins Methods
-
-You can extend `AuthService` using mixins.
-
-For more details please see the [Mixins](#mixins) section
 
 # License
 

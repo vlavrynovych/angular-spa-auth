@@ -6,8 +6,7 @@
         MISSING_CURRENT_USER_ENDPOINT: 'Endpoint for current user is not specified',
         MISSING_LOGIN_ENDPOINT: 'Login endpoint is not specified',
         MISSING_LOGOUT_ENDPOINT: 'Logout endpoint is not specified',
-        SUCCESS_AUTH: 'Successfully authenticated',
-        CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process: '
+        SUCCESS_AUTH: 'Successfully authenticated'
     };
 
     angular.module('angular-spa-auth', ['ngRoute'])
@@ -111,8 +110,7 @@
                      * @param {*} err backend error object
                      */
                     error: error
-                },
-                mixins: {}
+                }
             };
 
             // ------------------------------------------------------------------------/// Private
@@ -137,9 +135,7 @@
 
             function isAuthenticated() {
                 if (!config.endpoints.isAuthenticated) {
-                    return $q(function (resolve, reject) {
-                        resolve(true)
-                    });
+                    return $q.resolve(true);
                 }
 
                 return $http.get(config.endpoints.isAuthenticated).then(function (response) {
@@ -226,7 +222,7 @@
                  * @returns {Promise}
                  */
                 getCurrentUser: function () {
-                    return $rootScope.currentUser ? $rootScope.currentUser : service.refreshCurrentUser();
+                    return $rootScope.currentUser ? $q.resolve($rootScope.currentUser) : service.refreshCurrentUser();
                 },
                 /**
                  * Loads user from backed using currentUser endpoint or getUser handler
@@ -237,7 +233,7 @@
                     return config.handlers.getUser().then(function (user) {
                         $rootScope.currentUser = user;
                         service.openTarget();
-                        return user;
+                        return $rootScope.currentUser;
                     })
                 },
                 /**
@@ -265,21 +261,16 @@
                  * @param {String=} configuration.uiRoutes.home home route
                  * @param {String=} configuration.uiRoutes.login login route
                  * @param {Object=} configuration.handlers allows you to provide you implementation for key methods of authentication process
-                 * @param {Object=} configuration.mixins allows you to extend AuthService
                  */
                 run: function (configuration) {
                     if (configuration) {
-                        config = angular.merge(config, configuration);
-
-                        if (configuration.mixins) {
-                            for(var prop in configuration.mixins) {
-                                if(service.hasOwnProperty(prop)){
-                                    throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE + prop)
-                                }
-                            }
-
-                            angular.merge(service, configuration.mixins);
+                        if(configuration.publicUrls) {
+                            //publicUrls should be completely replaced by new value if provided
+                            //to provide ability to set new array with only one route
+                            config.publicUrls = configuration.publicUrls;
                         }
+
+                        config = angular.merge(config, configuration);
                     }
                     init()
                 },
