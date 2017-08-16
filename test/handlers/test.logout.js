@@ -1,7 +1,5 @@
-describe('Handlers: ', function () {
+describe('Handlers:', function () {
     var AuthService, $location, $http, $httpBackend;
-    var customLogoutPath = '/custom-logout';
-    var currentUserPath = '/current-user';
 
     beforeEach(module('angular-spa-auth'));
     beforeEach(inject(function(_AuthService_, _$location_, _$httpBackend_, _$http_){
@@ -10,15 +8,16 @@ describe('Handlers: ', function () {
         $http = _$http_;
         $httpBackend = _$httpBackend_;
 
-        //setup
+        //setup backend
         $httpBackend.whenGET(AuthService.config.endpoints.logout).respond(200);
-        $httpBackend.whenGET(customLogoutPath).respond(500);
-        $httpBackend.whenPOST(customLogoutPath).respond(200);
+        $httpBackend.whenGET(ENDPOINTS.LOGOUT_SUCCESS).respond(200);
+        $httpBackend.whenGET(ENDPOINTS.LOGOUT_ERROR).respond(500);
 
-        $httpBackend.whenGET(currentUserPath).respond(200, {username: 'jdoe'});
+        AuthService.config.endpoints.currentUser = ENDPOINTS.CURRENT_USER_SUCCESS;
+        $httpBackend.whenGET(ENDPOINTS.CURRENT_USER_SUCCESS).respond(200, USER);
     }));
 
-    describe('logout: ', function () {
+    describe('logout():', function () {
         it('basic check', function () {
             //given: '' is default state
             expect($location.path()).toEqual('');
@@ -30,12 +29,9 @@ describe('Handlers: ', function () {
             //then: should redirect to login page
             expect($location.path()).toEqual('/login');
 
-            //when: setup custom logout handler with a POST method
-            var logoutCalled = false;
-            setup(function () {
-                return $http.post(customLogoutPath).then(function () {
-                    logoutCalled = true;
-                })
+            //when: setup custom logout handler with a GET method
+            setupAndSpy(function () {
+                return $http.get(ENDPOINTS.LOGOUT_SUCCESS);
             });
 
             //and: call custom logout
@@ -43,35 +39,71 @@ describe('Handlers: ', function () {
             $httpBackend.flush();
 
             //then: check if called
-            expect(logoutCalled).toEqual(true, 'custom logout not called');
+            checkIfCalled();
         });
 
-        it('on fail', function () {
+        it('custom logout handler fails', function () {
+            //given:
+            var failed = false;
+
             //when: setup custom logout handler with a GET method that should fail
-            var logoutCalledOnFail = false;
-            setup(function () {
-                return $http.get(customLogoutPath);
+            setupAndSpy(function () {
+                return $http.get(ENDPOINTS.LOGOUT_ERROR);
             });
 
             //and: call custom logout
             AuthService.logout().catch(function () {
-                logoutCalledOnFail = true;
+                failed = true;
             });
             $httpBackend.flush();
 
             //then: check if called
-            expect(logoutCalledOnFail).toEqual(true, 'custom logout does not failed');
+            checkIfCalled();
+            expect(failed).toBeTruthy('custom login does not fail');
         });
-        
-        function setup(logoutHandler) {
+
+        it('no logout endpoint', function () {
+            //given: logout endpoint is not specified
+            AuthService.config.endpoints.logout = null;
+
+            //then: validation error
+            expect(function() {
+                AuthService.logout();
+            }).toThrowError("Logout endpoint is not specified");
+        });
+
+        it('default logout handler fails', function () {
+            //given: logout endpoint returns 500
             AuthService.run({
                 endpoints: {
-                    currentUser: currentUserPath
-                },
+                    logout: ENDPOINTS.LOGOUT_ERROR
+                }
+            });
+
+            //when:
+            var failed = false;
+            AuthService.logout().catch(function () {
+                failed = true;
+            });
+            $httpBackend.flush();
+            
+            //then: validation error
+            expect(failed).toBeTruthy('custom login does not fail');
+        });
+        
+        function setupAndSpy(logoutHandler) {
+            AuthService.run({
                 handlers: {
                     logout: logoutHandler
                 }
             });
+
+            spyOn(AuthService.config.handlers, 'logout').and.callThrough();
+        }
+
+        function checkIfCalled() {
+            expect(AuthService.config.handlers.logout).toHaveBeenCalled();
+            expect(AuthService.config.handlers.logout.calls.count()).toEqual(1);
         }
     });
 });

@@ -8,7 +8,7 @@ then
 
     gulp build
     npm test
-    git add . && git commit -a -m "Build module"
+    git add . && git commit -a -m "Build dist"
 #    npm version minor
     #update bower.json and package.json versions
     #add tag

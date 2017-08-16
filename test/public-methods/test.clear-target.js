@@ -1,4 +1,4 @@
-describe('Public methods: ', function () {
+describe('Public methods:', function () {
     var AuthService, $location;
 
     beforeEach(module('angular-spa-auth'));
@@ -7,10 +7,10 @@ describe('Public methods: ', function () {
         $location = _$location_
     }));
 
-    describe('clearTarget(): ', function () {
+    describe('clearTarget():', function () {
         it('basic check', function () {
-            //given: '' is default state
-            expect(AuthService.config.uiRoutes.target).toEqual('');
+            //given: null is default state
+            expect(AuthService.config.uiRoutes.target).toBeNull();
 
             //when: go to login page and save
             $location.path('/login-test');

@@ -1,4 +1,4 @@
-describe('Public methods: ', function () {
+describe('Public methods:', function () {
     var AuthService;
 
     beforeEach(module('angular-spa-auth'));
@@ -6,7 +6,7 @@ describe('Public methods: ', function () {
         AuthService = _AuthService_;
     }));
 
-    describe('isPublic(): ', function () {
+    describe('isPublic():', function () {
         it('basic check', function () {
             check('/login', true);
             check('/manage/login-sessions', false);
@@ -47,9 +47,57 @@ describe('Public methods: ', function () {
             check('/somethingElse', false);
         });
 
+        it('custom list with RegExp', function () {
+            //given:
+            AuthService.run({
+                publicUrls: ['/registration', /^\/manage\/.*$/ , '/forgotPassword']
+            });
+
+            check('/registration', true);
+            check('/manage/users', true);
+            check('/manage/', true);
+            check('manage/jobs', false);
+            check('/forgotPassword', true);
+            check('/home', false);
+            check('/login', false);
+            check('/somethingElse', false);
+        });
+
+        it('Call with incorrect public urls', function () {
+            //given:
+            AuthService.run({
+                publicUrls: [53, -8, false, undefined, null, NaN]
+            });
+
+            //when:
+            check('/registration', false);
+            check('/manage/users', false);
+        });
+
+        it('Mix incorrect and correct public urls', function () {
+            //when:
+            AuthService.run({
+                publicUrls: [53, -8, false, undefined, null, NaN, '/home', /mypage/]
+            });
+
+            //then:
+            check('/registration', false);
+            check('/manage/users', false);
+            check('/home', true);
+            check('/test/mypage/', true);
+        });
+
+        it('Call without parameter', function () {
+            //when:
+            var result = AuthService.isPublic();
+
+            //then:
+            expect(result).toEqual(false);
+        });
+
         it('edge cases', function () {
             //when:
-            var values = [null, undefined, false, true, 0, 20, 0.4, 0, -1, '', '/test'];
+            var values = [null, undefined, NaN, false, true, 0, 20, 0.4, 0, -1, '', '/test'];
 
             //then:
             values.forEach(function (value) {

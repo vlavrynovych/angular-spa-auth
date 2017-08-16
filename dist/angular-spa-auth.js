@@ -6,28 +6,48 @@
         MISSING_CURRENT_USER_ENDPOINT: 'Endpoint for current user is not specified',
         MISSING_LOGIN_ENDPOINT: 'Login endpoint is not specified',
         MISSING_LOGOUT_ENDPOINT: 'Logout endpoint is not specified',
-        SUCCESS_AUTH: 'Successfully authenticated',
-        ERROR_OCCURS: 'Error occurs',
-        CANNOT_OVERRIDE_CORE: 'You cannot override core service methods. Please use handlers to customize your auth process: '
+        SUCCESS_AUTH: 'Successfully authenticated'
     };
 
     angular.module('angular-spa-auth', ['ngRoute'])
-        .run(['$rootScope', '$location', '$timeout', 'AuthService', function ($rootScope, $location, $timeout, AuthService) {
+        .run(['$rootScope', '$location', 'AuthService', function ($rootScope, $location, AuthService) {
             AuthService.saveTarget();
             $rootScope.$on('$routeChangeStart', function (event, next) {
-                // if not logged yet then save target route
-                if ((!AuthService.isAuthenticated())) {
-                    if (next.$$route && !AuthService.isPublic(next.$$route.originalPath)) {
-                        event.preventDefault();
-                        $timeout(function () {
-                            console.info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
-                            AuthService.openLogin();
-                        });
+                AuthService._info('Start loading: ' + $location.path());
+
+                if(isKnownStatus()) {
+                    if (AuthService.isAuthenticated()) {
+                        if($location.path() == AuthService.config.uiRoutes.login) {
+                            stop();
+                            AuthService.openHome();
+                        }
+                    } else if (isPrivate()) {
+                        stop();
+                        AuthService._info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
+                        AuthService.openLogin();
                     }
-                } else {
-                    console.info('Loading ' + $location.path());
+                } else if (isPrivate()) {
+                    AuthService._info('Unknown user status');
+                    stop();
+                }
+
+                function isPrivate() {
+                    return next.$$route && !AuthService.isPublic(next.$$route.originalPath)
+                }
+
+                function stop() {
+                    AuthService._info('Stop loading: ' + $location.path());
+                    event.preventDefault();
                 }
             });
+
+            $rootScope.$on('$routeChangeSuccess', function (event, next) {
+                AuthService._info('Loaded: ' + $location.path());
+            });
+
+            function isKnownStatus() {
+                return $rootScope.currentUser !== undefined;
+            }
         }])
         .service('AuthService', ['$rootScope', '$q', '$http', '$location', function ($rootScope, $q, $http, $location) {
 
@@ -66,7 +86,7 @@
                         }
 
                         return $http.get(config.endpoints.currentUser).then(function (response) {
-                            info('current user: ' + JSON.stringify(response.data));
+                            info('Current user: ' + JSON.stringify(response.data));
                             return response.data
                         })
                     },
@@ -85,7 +105,7 @@
                             throw new Error(MESSAGES.MISSING_LOGIN_ENDPOINT)
                         }
 
-                        return $http.post(config.endpoints.login, credentials)
+                        return $http.post(config.endpoints.login, credentials);
                     },
 
                     logout: function () {
@@ -96,8 +116,6 @@
                         return $http.get(config.endpoints.logout).then(function () {
                             $rootScope.currentUser = null;
                             openLogin();
-                        }, function (err) {
-                            console.error(err);
                         });
                     },
 
@@ -113,80 +131,107 @@
                      * Error handler
                      * @param {*} err backend error object
                      */
-                    error: function (err) {
-                        if(config.verbose) {
-                            console.error(MESSAGES.ERROR_OCCURS, err)
-                        }
-                    }
-                },
-                mixins: {}
+                    error: error
+                }
             };
 
             // ------------------------------------------------------------------------/// Private
             function info(message) {
+                _log(console.info, message)
+            }
+
+            function error(err) {
+                _log(console.error, err);
+            }
+            
+            function _log(fn, msg) {
                 if(config.verbose) {
-                    console.info(message)
+                    fn && fn(msg)
                 }
             }
 
             function goTo(route) {
                 $location.path(route);
+                info('Redirected to the ' + route);
             }
 
             function isAuthenticated() {
                 if (!config.endpoints.isAuthenticated) {
-                    return $q(function (resolve, reject) {
-                        resolve(true)
-                    });
+                    return $q.resolve(true);
                 }
 
                 return $http.get(config.endpoints.isAuthenticated).then(function (response) {
                     var isAuth = JSON.parse(response.data);
                     info('isAuthenticated: ' + isAuth);
+                    $rootScope.currentUser = response.data;
                     return isAuth || $q.reject(response.data);
                 });
             }
 
             function init() {
-                isAuthenticated().then(function () {
-                    service.refreshCurrentUser()
-                        .then(config.handlers.success, config.handlers.error)
-                        .catch(openLogin);
-                })
+                isAuthenticated()
+                    .then(service.refreshCurrentUser)
+                    .then(function (user) {
+                        config.handlers.success(user);
+                    })
+                    .catch(function (err) {
+                        openLogin();
+                        return onError(err);
+                    });
             }
 
             function openLogin() {
                 goTo(config.uiRoutes.login);
             }
 
+            function onError(err) {
+                error(err);
+                config.handlers.error(err);
+                return $q.reject(err);
+            }
+
+            function getHome() {
+                return config.handlers.getHomePage($rootScope.currentUser);
+            }
+
             // ------------------------------------------------------------------------/// Public
             var service = {
                 config: config,
+                _info: info,
 
                 /**
                  * Returns true if provide route url is in the list of public urls
-                 * @param {String} url route path that should be checked
+                 * @param {String} path route path that should be checked
                  * @returns {boolean} true if url is in the list of public urls
                  */
-                isPublic: function (url) {
-                    return config.publicUrls.some(function (publicUrl) {
-                        return url && publicUrl.startsWith(url);
+                isPublic: function (path) {
+                    if(!path) {
+                        return false;
+                    }
+
+                    return config.publicUrls.some(function (pattern) {
+                        if(pattern instanceof RegExp) {
+                            return path.match(pattern);
+                        } else if(typeof pattern == "string") {
+                            return path && pattern.startsWith(path);
+                        } else {
+                            return false;
+                        }
                     });
                 },
                 /**
                  * Saves current route as a target route
                  */
                 saveTarget: function () {
-                    config.uiRoutes.target = $location.path();
+                    config.uiRoutes.target = $location.path() || null;
                     info('Target route is saved: ' + config.uiRoutes.target);
                 },
                 /**
                  * Redirects user to the saved target route if exists or to the home page
                  */
                 openTarget: function () {
-                    config.uiRoutes.target = config.uiRoutes.target || config.handlers.getHomePage($rootScope.currentUser);
-                    goTo(config.uiRoutes.target);
-                    info('Redirected to the target route: ' + config.uiRoutes.target);
+                    var target = config.uiRoutes.target || getHome();
+                    goTo(target);
                     service.clearTarget()
                 },
                 /**
@@ -203,7 +248,7 @@
                  * Redirects user to the home page
                  */
                 openHome: function () {
-                    goTo(config.handlers.getHomePage($rootScope.currentUser));
+                    goTo(getHome());
                 },
                 /**
                  * Returns saved current user or load it from backed
@@ -211,7 +256,7 @@
                  * @returns {Promise}
                  */
                 getCurrentUser: function () {
-                    return $rootScope.currentUser ? $rootScope.currentUser : service.refreshCurrentUser();
+                    return $rootScope.currentUser ? $q.resolve($rootScope.currentUser) : service.refreshCurrentUser();
                 },
                 /**
                  * Loads user from backed using currentUser endpoint or getUser handler
@@ -222,7 +267,7 @@
                     return config.handlers.getUser().then(function (user) {
                         $rootScope.currentUser = user;
                         service.openTarget();
-                        return user;
+                        return $rootScope.currentUser;
                     })
                 },
                 /**
@@ -250,21 +295,16 @@
                  * @param {String=} configuration.uiRoutes.home home route
                  * @param {String=} configuration.uiRoutes.login login route
                  * @param {Object=} configuration.handlers allows you to provide you implementation for key methods of authentication process
-                 * @param {Object=} configuration.mixins allows you to extend AuthService
                  */
                 run: function (configuration) {
                     if (configuration) {
-                        config = angular.merge(config, configuration);
-
-                        if (configuration.mixins) {
-                            for(var prop in configuration.mixins) {
-                                if(service.hasOwnProperty(prop)){
-                                    throw new Error(MESSAGES.CANNOT_OVERRIDE_CORE + prop)
-                                }
-                            }
-
-                            angular.merge(service, configuration.mixins);
+                        if(configuration.publicUrls) {
+                            //publicUrls should be completely replaced by new value if provided
+                            //to provide ability to set new array with only one route
+                            config.publicUrls = configuration.publicUrls;
                         }
+
+                        config = angular.merge(config, configuration);
                     }
                     init()
                 },
@@ -273,10 +313,10 @@
                  * @param {Object} credentials object with any type of information that is needed to compelete authentication process
                  */
                 login: function (credentials) {
-                    config.handlers.login(credentials)
+                    return config.handlers.login(credentials)
                         .then(service.refreshCurrentUser)
                         .then(config.handlers.success)
-                        .catch(config.handlers.error);
+                        .catch(onError);
                 }
             };
 
