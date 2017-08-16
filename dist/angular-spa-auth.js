@@ -151,8 +151,12 @@
             }
 
             function goTo(route) {
-                $location.path(route);
-                info('Redirected to the ' + route);
+                if(route == config.uiRoutes.login && service.isAuthenticated()) {
+                    $location.path(getHome());
+                } else {
+                    $location.path(route);
+                    info('Redirected to the ' + route);
+                }
             }
 
             function isAuthenticated() {
