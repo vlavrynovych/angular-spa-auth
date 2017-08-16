@@ -49,7 +49,7 @@
                 return $rootScope.currentUser !== undefined;
             }
         }])
-        .service('AuthService', ['$rootScope', '$q', '$http', '$location', function ($rootScope, $q, $http, $location) {
+        .service('AuthService', ['$rootScope', '$q', '$http', '$location', '$route', function ($rootScope, $q, $http, $location, $route) {
 
             // ------------------------------------------------------------------------/// Config
             var config = {
@@ -137,7 +137,7 @@
 
             // ------------------------------------------------------------------------/// Private
             function info(message) {
-                _log(console.info, message)
+                _log(console.info, 'AuthService: ' + message)
             }
 
             function error(err) {
@@ -151,8 +151,15 @@
             }
 
             function goTo(route) {
+                info(($location.path() || 'unknown') + ' -----> ' + route);
                 if(route == config.uiRoutes.login && service.isAuthenticated()) {
-                    $location.path(getHome());
+                    info('User is already authenticated and cannot open login page: ' + route);
+                    route = getHome();
+                    $location.path(route);
+                    info('Redirected to the ' + route);
+                } else if(route == $location.path()) {
+                    info('Reload: ' + route);
+                    $route.reload()
                 } else {
                     $location.path(route);
                     info('Redirected to the ' + route);
@@ -173,6 +180,7 @@
             }
 
             function init() {
+                info('init');
                 isAuthenticated()
                     .then(service.refreshCurrentUser)
                     .then(function (user) {
@@ -235,6 +243,7 @@
                  */
                 openTarget: function () {
                     var target = config.uiRoutes.target || getHome();
+                    info('Open target: ' + target);
                     goTo(target);
                     service.clearTarget()
                 },
