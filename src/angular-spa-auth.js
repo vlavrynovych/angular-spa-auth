@@ -201,12 +201,22 @@
 
                 /**
                  * Returns true if provide route url is in the list of public urls
-                 * @param {String} url route path that should be checked
+                 * @param {String} path route path that should be checked
                  * @returns {boolean} true if url is in the list of public urls
                  */
-                isPublic: function (url) {
-                    return config.publicUrls.some(function (publicUrl) {
-                        return url && publicUrl.startsWith(url);
+                isPublic: function (path) {
+                    if(!path) {
+                        return false;
+                    }
+
+                    return config.publicUrls.some(function (pattern) {
+                        if(pattern instanceof RegExp) {
+                            return path.match(pattern);
+                        } else if(typeof pattern == "string") {
+                            return path && pattern.startsWith(path);
+                        } else {
+                            return false;
+                        }
                     });
                 },
                 /**

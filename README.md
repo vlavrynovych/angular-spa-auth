@@ -147,7 +147,7 @@ The `config` object have different field for customizing you authentication proc
 | Name | Type | Description |
 |:----:|:----:|:------------|
 | [verbose](#verbose) | `Boolean` | Activates `console.info` output if true |
-| [publicUrls](#public-urls) | `Array<String>` | List url that are available for unauthorized users |
+| [publicUrls](#public-urls) | `Array<String|RegExp>` | List urls that are available for unauthorized users |
 | [endpoints](#endpoints) | `Object` | Gives you ability to setup all the backed endpoints that will own roles in the authentication process |
 | [uiRoutes](#ui-routes) | `Object` | Helps you automatically redirect user to the specified UI routes such as `home` and `login` |
 | [handlers](#handlers) | `Object` | Allows you to provide you implementation for key methods of authentication process |
@@ -175,7 +175,7 @@ Public urls is a list of urls that available for all unauthorized users.
 ```js
 AuthService.run({
     ...
-    publicUrls: ['/login', '/home', '/registration', '/confirmation', '/forgotPassword'],
+    publicUrls: ['/login', '/home', '/registration', /public/, '/confirmation', '/forgotPassword', /^\/manage\/.*$/],
     ...
 })
 ```
