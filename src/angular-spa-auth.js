@@ -10,22 +10,44 @@
     };
 
     angular.module('angular-spa-auth', ['ngRoute'])
-        .run(['$rootScope', '$location', '$timeout', 'AuthService', function ($rootScope, $location, $timeout, AuthService) {
+        .run(['$rootScope', '$location', 'AuthService', function ($rootScope, $location, AuthService) {
             AuthService.saveTarget();
             $rootScope.$on('$routeChangeStart', function (event, next) {
-                // if not logged yet then save target route
-                if ((!AuthService.isAuthenticated())) {
-                    if (next.$$route && !AuthService.isPublic(next.$$route.originalPath)) {
-                        event.preventDefault();
-                        $timeout(function () {
-                            console.info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
-                            AuthService.openLogin();
-                        });
+                AuthService._info('Start loading: ' + $location.path());
+
+                if(isKnownStatus()) {
+                    if (AuthService.isAuthenticated()) {
+                        if($location.path() == AuthService.config.uiRoutes.login) {
+                            stop();
+                            AuthService.openHome();
+                        }
+                    } else if (isPrivate()) {
+                        stop();
+                        AuthService._info(MESSAGES.UNAUTHORIZED_REDIRECT_TO_LOGIN);
+                        AuthService.openLogin();
                     }
-                } else {
-                    console.info('Loading ' + $location.path());
+                } else if (isPrivate()) {
+                    AuthService._info('Unknown user status');
+                    stop();
+                }
+
+                function isPrivate() {
+                    return next.$$route && !AuthService.isPublic(next.$$route.originalPath)
+                }
+
+                function stop() {
+                    AuthService._info('Stop loading: ' + $location.path());
+                    event.preventDefault();
                 }
             });
+
+            $rootScope.$on('$routeChangeSuccess', function (event, next) {
+                AuthService._info('Loaded: ' + $location.path());
+            });
+
+            function isKnownStatus() {
+                return $rootScope.currentUser !== undefined;
+            }
         }])
         .service('AuthService', ['$rootScope', '$q', '$http', '$location', function ($rootScope, $q, $http, $location) {
 
@@ -141,6 +163,7 @@
                 return $http.get(config.endpoints.isAuthenticated).then(function (response) {
                     var isAuth = JSON.parse(response.data);
                     info('isAuthenticated: ' + isAuth);
+                    $rootScope.currentUser = response.data;
                     return isAuth || $q.reject(response.data);
                 });
             }
@@ -174,6 +197,7 @@
             // ------------------------------------------------------------------------/// Public
             var service = {
                 config: config,
+                _info: info,
 
                 /**
                  * Returns true if provide route url is in the list of public urls
