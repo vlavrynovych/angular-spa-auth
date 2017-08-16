@@ -31,6 +31,7 @@ describe('angular-spa-auth', function () {
         it('User is not logged in on start', function () {
             //given:
             expect($rootScope.currentUser).toBeUndefined();
+            events = [];
 
             $rootScope.$on("$routeChangeStart", function(e) {
                 e.path = $location.path();
@@ -116,6 +117,48 @@ describe('angular-spa-auth', function () {
             expect($location.path()).toEqual(AuthService.config.uiRoutes.login);
             expect($rootScope.currentUser).toBeNull();
             checkEvent(true);
+        });
+
+
+        it('Refresh when you are on the login page and login', function () {
+            //given:
+            expect($rootScope.currentUser).toBeUndefined();
+            events = [];
+            AuthService.config.uiRoutes.target = AuthService.config.uiRoutes.login;
+
+            $rootScope.$on("$routeChangeStart", function(e) {
+                e.path = $location.path();
+                e.i = events.length;
+                events.push(e);
+            });
+
+            //when: isAuthenticated method is triggered but we still do not know status of user
+            changeRoute(AuthService.config.uiRoutes.login);
+
+            //then: login page is available
+            expect($location.path()).toEqual(AuthService.config.uiRoutes.login);
+            expect($rootScope.currentUser).toBeUndefined();
+            checkEvent(false);
+
+            //when: trigger after init
+            $httpBackend.flush();
+
+            //then: we are on login page and user is set to false, because we checked his authentication status
+            expect($location.path()).toEqual(AuthService.config.uiRoutes.login);
+            expect($rootScope.currentUser).toEqual(false);
+
+            //when: try to login using some credentials
+            AuthService.login(credentials);
+            $httpBackend.flush();
+
+            //then: successfully authenticated and redirected to the home page EVEN if the target is login
+            expect($location.path()).toEqual(AuthService.config.uiRoutes.home);
+
+            //when: try again to go to the login page
+            changeRoute(AuthService.config.uiRoutes.login);
+
+            //then: successfully authenticated and redirected to the home page EVEN if the target is login
+            expect($location.path()).toEqual(AuthService.config.uiRoutes.home);
         });
 
         function changeRoute(path) {
