@@ -109,7 +109,6 @@ describe('Public methods:', function () {
             //then:
             expect(success).not.toBeNull();
             expect(success).toEqual(false);
-            expect($location.path()).toEqual(loginPage);
         });
 
         it('No config provided', function () {

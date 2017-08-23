@@ -48,20 +48,22 @@ describe('angular-spa-auth', function () {
             expect($rootScope.currentUser).toBeUndefined();
             watch($location);
 
-            //when: isAuthenticated method is triggered but we still do not know status of user
+            //when: isAuthenticated method is triggered
             $location.path('/public');
+            $httpBackend.flush(1);
 
             //then: public page is always available
             expect($location.path()).toEqual('/public');
-            expect($rootScope.currentUser).toBeUndefined();
+            expect($rootScope.currentUser).toEqual(false);
             checkEvent(false, '/public');
 
-            //when: isAuthenticated method is triggered but we still do not know status of user
+            //when: isAuthenticated method is triggered
             $location.path('/private');
 
             //then: private page is rejected
             checkEvent(true, '/private');
-            expect($rootScope.currentUser).toBeUndefined();
+            expect($rootScope.currentUser).toEqual(false);
+            expect($location.path()).not.toEqual('/private');
 
             //when: trigger after init
             $httpBackend.flush();
@@ -187,6 +189,28 @@ describe('angular-spa-auth', function () {
             expect($location.path()).toEqual('/private');
             expect($rootScope.currentUser).toEqual(USER);
         });
+
+        it('User is not logged in on start, check home page', function () {
+            //given:
+            expect($rootScope.currentUser).toBeUndefined();
+            watch($location);
+
+            //when: isAuthenticated method is triggered but we still do not know status of user
+            $location.path(AuthService.config.uiRoutes.home);
+
+            //then: public page is always available
+            expect($location.path()).toEqual(AuthService.config.uiRoutes.home);
+            expect($rootScope.currentUser).toBeUndefined();
+            checkEvent(false, AuthService.config.uiRoutes.home);
+
+            //when: trigger after init
+            $httpBackend.flush();
+
+            //then: we are on login page and user is set to false, because we checked his authentication status
+            expect($location.path()).toEqual(AuthService.config.uiRoutes.home);
+            expect($rootScope.currentUser).toEqual(false);
+        });
+
 
         function watch($location) {
             events = [];

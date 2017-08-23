@@ -187,7 +187,9 @@
                         config.handlers.success(user);
                     })
                     .catch(function (err) {
-                        openLogin();
+                        if(!service.isPublic($location.path())) {
+                            openLogin();
+                        }
                         return onError(err);
                     });
             }
