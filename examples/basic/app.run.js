@@ -2,7 +2,7 @@
 (function () {
     angular
         .module('app')
-        .run(['AuthService', function (AuthService) {
+        .run(['AuthService', '$http', function (AuthService, $http) {
             var authenticatedOnStart = window.location.href.indexOf('authenticated') > 0;
 
             AuthService.run({
@@ -13,6 +13,11 @@
                     currentUser: './endpoints/currentUser.json',
                     logout: './endpoints/logout.json',
                     login: './endpoints/login.json'
+                },
+                handlers: {
+                    login: function(credentials) {
+                        return $http.get(AuthService.config.endpoints.login, credentials);
+                    }
                 }
             });
         }]);

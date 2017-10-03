@@ -68,7 +68,7 @@ the authentication process and route change for the [AngularJS](https://angularj
 - Works perfect with both: [**angular-route**](https://www.npmjs.com/package/angular-route)
 ([**ngRoute**](https://www.npmjs.com/package/angular-route)) and
 [**angular-route-segment**](http://angular-route-segment.com/).
-Also should work will all the modules that are based on **ngRoute**
+Also should work with all the modules that are based on **ngRoute**
 - Authneticated user model is always available in `$rootScope.currentUser`
 which means that you can use it in your views as `<div ng-show='currentUser.admin'>{{currentUser.firstName}}</div>`
 And you can always get it using service method - [`AuthService.getCurrentUser()`](#getcurrentuser-method) - in any place of your project
